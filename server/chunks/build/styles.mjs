@@ -1,0 +1,40 @@
+const interopDefault = r => r.default || r || [];
+const styles = {
+  "node_modules/nuxt/dist/app/entry.js": () => import('./entry-styles.vdMmtvyK.mjs').then(interopDefault),
+  "pages/article/[id].vue": () => import('./_id_-styles.DyLU7llU.mjs').then(interopDefault),
+  "pages/index.vue": () => import('./index-styles.ChAzrczI.mjs').then(interopDefault),
+  "pages/rikya/components/add_artikel.vue": () => import('./add_artikel-styles.BrUxfIV1.mjs').then(interopDefault),
+  "pages/rikya/components/Artikel.vue": () => import('./Artikel-styles.BWgrY0e8.mjs').then(interopDefault),
+  "pages/rikya/components/add_livestream.vue": () => import('./add_livestream-styles.r9Q_IQyC.mjs').then(interopDefault),
+  "pages/rikya/components/Home.vue": () => import('./Home-styles.CdQFge0f.mjs').then(interopDefault),
+  "pages/rikya/edit_stream/[id].vue": () => import('./_id_-styles.Cmk-CNtc.mjs').then(interopDefault),
+  "pages/rikya/edit_artikel/[id].vue": () => import('./_id_-styles.DVJqTDze.mjs').then(interopDefault),
+  "pages/rikya/components/LiveStream.vue": () => import('./LiveStream-styles.DL47JQ-1.mjs').then(interopDefault),
+  "pages/rikya/index.vue": () => import('./index-styles.C5nkn1Li.mjs').then(interopDefault),
+  "node_modules/nuxt/dist/app/components/error-404.vue": () => import('./error-404-styles.BcoFjqgl.mjs').then(interopDefault),
+  "pages/stream.vue": () => import('./stream-styles.DxTWn3qB.mjs').then(interopDefault),
+  "pages/watch/[id].vue": () => import('./_id_-styles.DTsdZqPo.mjs').then(interopDefault),
+  "node_modules/nuxt/dist/app/components/error-500.vue": () => import('./error-500-styles.DPP87-Dp.mjs').then(interopDefault),
+  "pages/rikya/index.vue?vue&type=style&index=0&scoped=edef02f0&lang.css": () => import('./index-styles.BEDU6qlb.mjs').then(interopDefault),
+  "node_modules/nuxt/dist/app/components/error-404.vue?vue&type=style&index=0&scoped=00b6b518&lang.css": () => import('./error-404-styles.DRLC0U6S.mjs').then(interopDefault),
+  "node_modules/nuxt/dist/app/components/error-500.vue?vue&type=style&index=0&scoped=f7ad9679&lang.css": () => import('./error-500-styles.DqmriZ_b.mjs').then(interopDefault),
+  "pages/rikya/edit_artikel/[id].vue?vue&type=style&index=0&scoped=37c04ccf&lang.css": () => import('./_id_-styles.B9-h4DSI.mjs').then(interopDefault),
+  "pages/rikya/components/Artikel.vue?vue&type=style&index=0&scoped=1f3807c0&lang.css": () => import('./Artikel-styles.DW-spC9Y.mjs').then(interopDefault),
+  "component/Adsense.vue": () => import('./Adsense-styles.CqVjY6QZ.mjs').then(interopDefault),
+  "component/Footer.vue": () => import('./Footer-styles.BX0U_eJb.mjs').then(interopDefault),
+  "pages/article/[id].vue?vue&type=style&index=0&lang.css": () => import('./_id_-styles.tbZi8mIg.mjs').then(interopDefault),
+  "pages/rikya/components/LiveStream.vue?vue&type=style&index=0&scoped=650e15bc&lang.css": () => import('./LiveStream-styles.CX3OAS2N.mjs').then(interopDefault),
+  "pages/rikya/edit_stream/[id].vue?vue&type=style&index=0&scoped=48f972df&lang.css": () => import('./_id_-styles.bL0-wRVU.mjs').then(interopDefault),
+  "pages/stream.vue?vue&type=style&index=0&lang.css": () => import('./stream-styles.CTeKO7bH.mjs').then(interopDefault),
+  "component/Footer.vue?vue&type=style&index=0&scoped=ab99b977&lang.css": () => import('./Footer-styles.CnZBUT5b.mjs').then(interopDefault),
+  "pages/index.vue?vue&type=style&index=0&lang.css": () => import('./index-styles.CX8TIZLl.mjs').then(interopDefault),
+  "pages/rikya/components/add_livestream.vue?vue&type=style&index=0&scoped=45ed1731&lang.css": () => import('./add_livestream-styles.C1gjDYaa.mjs').then(interopDefault),
+  "pages/watch/[id].vue?vue&type=style&index=0&lang.css": () => import('./_id_-styles.CDqEFCDc.mjs').then(interopDefault),
+  "pages/rikya/components/add_artikel.vue?vue&type=style&index=0&scoped=2eabaf9d&lang.css": () => import('./add_artikel-styles.BWaNPKQu.mjs').then(interopDefault),
+  "pages/rikya/components/add_artikel.vue?vue&type=style&index=1&scoped=2eabaf9d&lang.css": () => import('./add_artikel-styles.Dxb7MVz_.mjs').then(interopDefault),
+  "pages/rikya/components/Home.vue?vue&type=style&index=0&scoped=f911439f&lang.css": () => import('./Home-styles.B5XO_pIg.mjs').then(interopDefault),
+  "component/Adsense.vue?vue&type=style&index=0&scoped=f9227fc4&lang.css": () => import('./Adsense-styles.1M2HwW6S.mjs').then(interopDefault)
+};
+
+export { styles as default };
+//# sourceMappingURL=styles.mjs.map
