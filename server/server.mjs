@@ -26,16 +26,22 @@ console.log("Connected to Redis");
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Jika tidak ada Origin (misalnya, saat menjalankan dari aplikasi desktop atau server intern>      if (!origin) return callback(null, true);
+      // Daftar domain yang diizinkan
+      const allowedOrigins = ["http://localhost:3000", "http://localhost:5000", "http://192.168.1.5", "https://racingstation.top"];
 
-      // Periksa apakah Origin sama dengan URL yang ada di browser pengguna
-      if (origin === "http://localhost:3000" || origin === "http://192.168.1.5" || origin === "https://racingstation.top") {
-        callback(null, true);
+      // Jika tidak ada `origin` (misal: permintaan internal), izinkan
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      // Cek apakah `origin` ada di daftar yang diizinkan
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
       } else {
-        callback(new Error("Not allowed by CORS"));
+        return callback(new Error("Not allowed by CORS"));
       }
     },
-    credentials: false,
+    credentials: true, // Jika Anda menggunakan cookies
   })
 );
 
