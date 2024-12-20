@@ -26,17 +26,16 @@ console.log("Connected to Redis");
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Jika tidak ada Origin (misalnya, saat menjalankan dari aplikasi desktop atau server internal)
-      if (!origin) return callback(null, true);
+      // Jika tidak ada Origin (misalnya, saat menjalankan dari aplikasi desktop atau server intern>      if (!origin) return callback(null, true);
 
       // Periksa apakah Origin sama dengan URL yang ada di browser pengguna
-      if (origin === "http://localhost:3000" || origin === "http://192.168.1.5") {
+      if (origin === "http://localhost:3000" || origin === "http://192.168.1.5" || origin === "https://racingstation.top") {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
       }
     },
-    credentials: true,
+    credentials: false,
   })
 );
 
@@ -50,7 +49,11 @@ app.use(
     secret: "your_secret_key", // Use a strong, unique secret in production
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false }, // Set to true if using HTTPS
+    cookie: {
+      secure: process.env.NODE_ENV === "production", // Secure only in production
+      httpOnly: true, // Prevent client-side scripts from accessing the cookies
+      sameSite: "lax", // Adjust as necessary
+    },
   })
 );
 
@@ -244,7 +247,7 @@ const generateUniqueStreamSlug = async (title) => {
 
 // Endpoint untuk menyimpan stream
 app.post("/api/streams", async (req, res) => {
-  const { title, excerpt, link, content, imagePath } = req.body;
+  const { title, event, excerpt, link, content, imagePath } = req.body;
 
   try {
     // Buat slug unik berdasarkan judul
@@ -267,10 +270,10 @@ app.post("/api/streams", async (req, res) => {
 
     // Query untuk menyimpan stream
     const query = `
-      INSERT INTO streams (slug, title, excerpt, link, content, image_path, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO streams (slug, title, event, excerpt, link, content, image_path, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
-    const values = [slug, title, excerpt, link, content, imagePath, formattedCreatedAt];
+    const values = [slug, title, event, excerpt, link, content, imagePath, formattedCreatedAt];
 
     await db.execute(query, values);
     res.status(201).send({ message: "Stream created successfully", slug });
@@ -340,7 +343,7 @@ app.get("/api/streams/:slug", async (req, res) => {
 // Edit Stream
 app.put("/api/streams/:slug", async (req, res) => {
   const { slug } = req.params;
-  const { title, excerpt, link, content, status } = req.body;
+  const { title, event, excerpt, link, content, status } = req.body;
 
   // Pastikan slug valid
   if (!slug) {
@@ -365,6 +368,10 @@ app.put("/api/streams/:slug", async (req, res) => {
     if (title) {
       updates.push("title = ?");
       values.push(title);
+    }
+    if (title) {
+      updates.push("event = ?");
+      values.push(event);
     }
     if (excerpt) {
       updates.push("excerpt = ?");

@@ -669,62 +669,62 @@ const _routes = [
   {
     name: "article-id",
     path: "/article/:id()",
-    component: () => import('./_id_-B8xSgXY7.mjs')
+    component: () => import('./_id_-DX2XqpVi.mjs')
   },
   {
     name: "index",
     path: "/",
-    component: () => import('./index-mfZfpN_f.mjs')
+    component: () => import('./index-Djds4gkg.mjs')
   },
   {
     name: "rikya-components-add_artikel",
     path: "/rikya/components/add_artikel",
-    component: () => import('./add_artikel-DWCtTjxc.mjs')
+    component: () => import('./add_artikel-GWDtW4i8.mjs')
   },
   {
     name: "rikya-components-add_livestream",
     path: "/rikya/components/add_livestream",
-    component: () => import('./add_livestream-gSeRMfq6.mjs')
+    component: () => import('./add_livestream-BB6mf4mN.mjs')
   },
   {
     name: "rikya-components-Artikel",
     path: "/rikya/components/Artikel",
-    component: () => import('./Artikel-B85MEMwZ.mjs')
+    component: () => import('./Artikel-Bl_SaieL.mjs')
   },
   {
     name: "rikya-components-Home",
     path: "/rikya/components/Home",
-    component: () => import('./Home-CpmON3LE.mjs')
+    component: () => import('./Home-CJ7OrqjT.mjs')
   },
   {
     name: "rikya-components-LiveStream",
     path: "/rikya/components/LiveStream",
-    component: () => import('./LiveStream-C7_pDPfM.mjs')
+    component: () => import('./LiveStream-CQLeQa-H.mjs')
   },
   {
     name: "rikya-edit_artikel-id",
     path: "/rikya/edit_artikel/:id()",
-    component: () => import('./_id_-CS5WxfYZ.mjs')
+    component: () => import('./_id_-BMwrSZpo.mjs')
   },
   {
     name: "rikya-edit_stream-id",
     path: "/rikya/edit_stream/:id()",
-    component: () => import('./_id_-aKHpkmAr.mjs')
+    component: () => import('./_id_-XMpvXlCm.mjs')
   },
   {
     name: "rikya",
     path: "/rikya",
-    component: () => import('./index-CoiJItBt.mjs')
+    component: () => import('./index-2kqhCm5K.mjs')
   },
   {
     name: "stream",
     path: "/stream",
-    component: () => import('./stream-Cn8-hCvh.mjs')
+    component: () => import('./stream-BR8mcE53.mjs')
   },
   {
     name: "watch-id",
     path: "/watch/:id()",
-    component: () => import('./_id_-D0tj8TJw.mjs')
+    component: () => import('./_id_-OXwYB8dM.mjs')
   }
 ];
 const _wrapIf = (component, props, slots) => {
@@ -1359,7 +1359,7 @@ const _sfc_main$1 = {
     const statusMessage = _error.statusMessage ?? (is404 ? "Page Not Found" : "Internal Server Error");
     const description = _error.message || _error.toString();
     const stack = void 0;
-    const _Error404 = defineAsyncComponent(() => import('./error-404-BuZFRmwl.mjs'));
+    const _Error404 = defineAsyncComponent(() => import('./error-404-CtyX-u99.mjs'));
     const _Error = defineAsyncComponent(() => import('./error-500-28Q5K_1e.mjs'));
     const ErrorTemplate = is404 ? _Error404 : _Error;
     return (_ctx, _push, _parent, _attrs) => {
@@ -1441,5 +1441,5 @@ let entry;
 }
 const entry$1 = (ssrContext) => entry(ssrContext);
 
-export { _export_sfc as _, useRoute as a, resolveRouteObject as b, navigateTo as c, useNuxtApp as d, entry$1 as default, useRuntimeConfig as e, injectHead as i, nuxtLinkDefaults as n, resolveUnrefHeadInput as r, useRouter as u };
+export { _export_sfc as _, useRouter as a, useRoute as b, resolveRouteObject as c, navigateTo as d, entry$1 as default, useNuxtApp as e, injectHead as i, nuxtLinkDefaults as n, resolveUnrefHeadInput as r, useRuntimeConfig as u };
 //# sourceMappingURL=server.mjs.map
