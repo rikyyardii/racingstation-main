@@ -725,6 +725,11 @@ const _routes = [
     name: "watch-id",
     path: "/watch/:id()",
     component: () => import('./_id_-OXwYB8dM.mjs')
+  },
+  {
+    name: "watch-offline_screen",
+    path: "/watch/offline_screen",
+    component: () => import('./offline_screen-C5GPpx4d.mjs')
   }
 ];
 const _wrapIf = (component, props, slots) => {
