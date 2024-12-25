@@ -8,7 +8,7 @@ import "node:path";
 import "node:url";
 import { exec } from "child_process";
 
-// Fungsi untuk memulai Node server dari server.mjs
+// start server.mjs
 const startServerMJS = () => {
   const serverProcess = exec("node server/server.mjs", (error, stdout, stderr) => {
     if (error) {
@@ -30,5 +30,4 @@ const startServerMJS = () => {
 console.log("Starting server.mjs...");
 startServerMJS();
 
-// Tambahkan logika aplikasi Anda di sini
 console.log("All servers are running...");

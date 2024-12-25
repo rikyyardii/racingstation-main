@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router';
 import { F as Footer } from './Footer-DjGmtgj0.mjs';
 import { A as Adsense } from './Adsense-DC4FFgYL.mjs';
 import { SunIcon, MoonIcon, MenuIcon, XIcon, ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-vue-next';
+import { u as useHead } from './index-BabADJUJ.mjs';
 import { u as useRuntimeConfig } from './server.mjs';
 import '../runtime.mjs';
 import 'node:http';
@@ -25,6 +26,19 @@ const _sfc_main = {
   __name: "index",
   __ssrInlineRender: true,
   setup(__props) {
+    useHead({
+      title: "RacingStation - Sports News and Live Sports",
+      meta: [
+        { name: "description", content: "RACINGSTATION - Get the latest sports news and live sports streaming, including F1, MotoGP, WEC, Football, and other sports. Enjoy a mobile-friendly interface and stable streaming with Racingstation" },
+        { name: "keywords", content: "RacingStation, live sports streaming, streaming olahraga, berita olahraga, artikel olahraga" },
+        { name: "author", content: "RacingStation" },
+        { property: "og:title", content: "RacingStation - Live Sports and News Streaming" },
+        { property: "og:description", content: "Enjoy the best live sports streaming and the latest news on RacingStation. Live sports streaming and news articles are available anytime." },
+        { property: "og:image", content: "/public/assets/logo.png" },
+        { property: "og:url", content: "https://racingstation.top" },
+        { name: "twitter:card", content: "summary_large_image" }
+      ]
+    });
     useRouter();
     ref(null);
     const isMenuOpen = ref(false);
@@ -189,4 +203,4 @@ _sfc_main.setup = (props, ctx) => {
 };
 
 export { _sfc_main as default };
-//# sourceMappingURL=index-Djds4gkg.mjs.map
+//# sourceMappingURL=index-DvorvdZk.mjs.map

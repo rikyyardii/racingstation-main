@@ -674,7 +674,7 @@ const _routes = [
   {
     name: "index",
     path: "/",
-    component: () => import('./index-Djds4gkg.mjs')
+    component: () => import('./index-DvorvdZk.mjs')
   },
   {
     name: "rikya-components-add_artikel",

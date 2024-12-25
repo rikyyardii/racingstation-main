@@ -1,5 +1,5 @@
 import express from "express";
-import mysql from "mysql2/promise"; // Ganti dengan mysql2/promise untuk async/await
+import mysql from "mysql2/promise";
 import cors from "cors";
 import session from "express-session";
 import { EventEmitter } from "node:events";
@@ -26,44 +26,41 @@ console.log("Connected to Redis");
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Daftar domain yang diizinkan
-      const allowedOrigins = ["http://localhost:3000", "http://localhost:5000", "http://192.168.1.5", "https://racingstation.top"];
+      const allowedOrigins = ["// Daftar domain yang diizinkan //"];
 
-      // Jika tidak ada `origin` (misal: permintaan internal), izinkan
       if (!origin) {
         return callback(null, true);
       }
 
-      // Cek apakah `origin` ada di daftar yang diizinkan
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       } else {
         return callback(new Error("Not allowed by CORS"));
       }
     },
-    credentials: true, // Jika Anda menggunakan cookies
+    credentials: true,
   })
 );
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.options("*", cors()); // Respond to preflight OPTIONS requests
+app.options("*", cors());
 
 // Set up session middleware
 app.use(
   session({
-    secret: "your_secret_key", // Use a strong, unique secret in production
+    secret: "your_secret_key",
     resave: false,
     saveUninitialized: true,
     cookie: {
-      secure: process.env.NODE_ENV === "production", // Secure only in production
-      httpOnly: true, // Prevent client-side scripts from accessing the cookies
-      sameSite: "lax", // Adjust as necessary
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      sameSite: "lax",
     },
   })
 );
 
-// Koneksi ke database MySQL
+// Koneksi database MySQL
 const db = await mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -76,9 +73,8 @@ db.connect((err) => {
   console.log("Connected to MySQL");
 });
 
-// Redis Middleware Cache
 async function cacheMiddleware(req, res, next) {
-  const key = req.originalUrl; // Gunakan URL sebagai key cache
+  const key = req.originalUrl;
   const cachedData = await redisClient.get(key);
 
   if (cachedData) {
@@ -110,15 +106,13 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-// Static middleware to serve images from data/img
 app.use("/public/img", express.static(path.join(__dirname, "../public/img")));
 
-// Define the /api/articles_card route
+// route /api/articles_card
 app.get("/api/articles_card", cacheMiddleware, async (req, res) => {
   try {
     const [rows] = await db.query("SELECT * FROM articles");
-    // Simpan hasil query ke Redis dengan TTL (Time to Live)
-    await redisClient.setEx(req.originalUrl, 3600, JSON.stringify(rows)); // TTL = 3600 detik (1 jam)
+    await redisClient.setEx(req.originalUrl, 3600, JSON.stringify(rows));
     res.json(rows);
   } catch (error) {
     console.error("Error fetching articles:", error);
@@ -126,20 +120,19 @@ app.get("/api/articles_card", cacheMiddleware, async (req, res) => {
   }
 });
 
-// Define the /api/streams_card route (LiveStream.vue)
+// route /api/streams_card (LiveStream.vue)
 app.get("/api/streams_card", async (req, res) => {
   try {
-    // Query untuk mengambil semua data stream tanpa mempedulikan status
     const query = "SELECT * FROM streams";
     const [streams] = await db.execute(query);
-    res.json(streams); // Kirimkan semua streams, termasuk yang statusnya disable
+    res.json(streams);
   } catch (error) {
     console.error("Error fetching streams:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
-// Endpoint khusus untuk mengambil stream dengan status enable (stream.vue)
+// ambil stream dengan status enable (stream.vue)
 app.get("/api/streams_enabled", async (req, res) => {
   try {
     // Query untuk mengambil hanya stream dengan status enable
@@ -176,7 +169,7 @@ app.get("/api/home", checkAuth, (req, res) => {
   res.send({ success: true, message: "Welcome to the home page" });
 });
 
-// Endpoint to check session status for the frontend
+// Endpoint cek session status untuk frontend
 app.get("/api/check-session", (req, res) => {
   if (req.session.isAuthenticated) {
     res.send({ isLoggedIn: true });
@@ -204,7 +197,7 @@ const generateUniqueSlug = async (title) => {
   return slug;
 };
 
-// Endpoint untuk menyimpan artikel
+// Endpoint menyimpan artikel
 app.post("/api/articles", async (req, res) => {
   const { category, title, excerpt, date, author, readingTime, content, imagePath } = req.body;
 
@@ -212,7 +205,7 @@ app.post("/api/articles", async (req, res) => {
     // Buat slug unik berdasarkan judul
     const slug = await generateUniqueSlug(title);
 
-    // Query untuk menyimpan artikel dengan kolom `created_at` otomatis terisi
+    // menyimpan artikel dengan kolom `created_at` otomatis
     const query = `
       INSERT INTO articles (category, title, excerpt, date, author, reading_time, content, image_path, slug, created_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
@@ -251,7 +244,7 @@ const generateUniqueStreamSlug = async (title) => {
   return slug;
 };
 
-// Endpoint untuk menyimpan stream
+// Endpoint menyimpan stream
 app.post("/api/streams", async (req, res) => {
   const { title, event, excerpt, link, content, imagePath } = req.body;
 
@@ -259,7 +252,7 @@ app.post("/api/streams", async (req, res) => {
     // Buat slug unik berdasarkan judul
     const slug = await generateUniqueStreamSlug(title);
 
-    // Mendapatkan waktu lokal berdasarkan komputer yang digunakan
+    // ambil waktu lokal berdasarkan komputer yang digunakan
     const now = new Date();
     const options = {
       year: "numeric",
@@ -269,7 +262,7 @@ app.post("/api/streams", async (req, res) => {
       minute: "2-digit",
       second: "2-digit",
       hour12: false,
-      timeZone: "Asia/Jakarta", // Ganti sesuai zona waktu lokal Anda
+      timeZone: "Asia/Jakarta",
     };
     const localTime = new Intl.DateTimeFormat("en-CA", options).format(now).replace(/\//g, "-").replace(", ", " ");
     const formattedCreatedAt = localTime.replace("T", " ");
@@ -289,20 +282,20 @@ app.post("/api/streams", async (req, res) => {
   }
 });
 
-// Konfigurasi multer untuk menyimpan file di folder data/img
+// Konfigurasi multer untuk menyimpan file di folder public/img
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, "../public/img"));
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname)); // Simpan dengan nama unik
+    cb(null, uniqueSuffix + path.extname(file.originalname));
   },
 });
 
 const upload = multer({ storage: storage });
 
-// Endpoint untuk mengunggah gambar
+// Endpoint upload gambar
 app.post("/api/upload-image", upload.single("image"), (req, res) => {
   if (req.file) {
     const imagePath = `/public/img/${req.file.filename}`;
@@ -351,12 +344,12 @@ app.put("/api/streams/:slug", async (req, res) => {
   const { slug } = req.params;
   const { title, event, excerpt, link, content, status } = req.body;
 
-  // Pastikan slug valid
+  // cek slug valid
   if (!slug) {
     return res.status(400).json({ error: "Slug tidak valid" });
   }
 
-  // Pastikan setidaknya ada satu field yang dikirim untuk pembaruan
+  // cek inputan form
   if (!title && !excerpt && !link && !content && !status) {
     return res.status(400).json({ error: "Tidak ada data yang dikirim untuk pembaruan" });
   }
@@ -368,7 +361,6 @@ app.put("/api/streams/:slug", async (req, res) => {
       return res.status(404).json({ error: "Stream tidak ditemukan" });
     }
 
-    // Buat query dinamis untuk hanya memperbarui field yang dikirim
     const updates = [];
     const values = [];
     if (title) {
@@ -396,14 +388,14 @@ app.put("/api/streams/:slug", async (req, res) => {
       values.push(status);
     }
 
-    // Tambahkan slug ke values untuk klausa WHERE
+    // Tambahkan slug ke values untuk WHERE
     values.push(slug);
 
-    // Eksekusi query pembaruan
+    // Eksekusi query update
     const query = `UPDATE streams SET ${updates.join(", ")} WHERE slug = ?`;
     await db.execute(query, values);
 
-    // Hapus cache jika ada
+    // Hapus cache (jika ada)
     await redisClient.del("/api/streams_card");
 
     res.json({ message: "Stream berhasil diperbarui" });
@@ -414,7 +406,7 @@ app.put("/api/streams/:slug", async (req, res) => {
 });
 
 app.route("/api/articles/:slug").get(async (req, res) => {
-  const { slug } = req.params; // Mengambil slug dari parameter
+  const { slug } = req.params; // ambil slug dari parameter
   try {
     const [rows] = await db.query("SELECT * FROM articles WHERE slug = ?", [slug]); // Gunakan slug untuk query
     if (rows.length > 0) {
@@ -442,7 +434,6 @@ app.route("/api/articles/:id").put(async (req, res) => {
   try {
     const [result] = await db.execute(query, values);
     if (result.affectedRows > 0) {
-      // Hapus cache terkait setelah pembaruan
       await redisClient.del("/api/articles_card");
       res.json({ message: "Artikel berhasil diperbarui" });
     } else {
@@ -454,7 +445,7 @@ app.route("/api/articles/:id").put(async (req, res) => {
   }
 });
 
-// Endpoint untuk menghapus artikel
+// Endpoint delete artikel
 app.delete("/api/articles/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -474,7 +465,6 @@ app.delete("/api/articles/:id", async (req, res) => {
 
     await db.query("DELETE FROM articles WHERE id = ?", [id]);
 
-    // Hapus cache terkait setelah penghapusan
     await redisClient.del("/api/articles_card");
 
     res.json({ message: "Artikel berhasil dihapus" });
@@ -484,7 +474,7 @@ app.delete("/api/articles/:id", async (req, res) => {
   }
 });
 
-// Endpoint untuk menghapus stream
+// Endpoint delete stream
 app.delete("/api/streams/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -506,7 +496,6 @@ app.delete("/api/streams/:id", async (req, res) => {
     const [deleteResult] = await db.execute("DELETE FROM streams WHERE id = ?", [id]);
 
     if (deleteResult.affectedRows > 0) {
-      // Hapus cache terkait setelah penghapusan
       await redisClient.del("/api/streams_card");
 
       res.json({ message: "Stream and associated image deleted successfully" });
@@ -519,22 +508,22 @@ app.delete("/api/streams/:id", async (req, res) => {
   }
 });
 
-// Endpoint untuk menghitung jumlah artikel
+// Endpoint hitung jumlah artikel
 app.get("/api/articles_count", async (req, res) => {
   try {
     const [rows] = await db.query("SELECT COUNT(*) AS total FROM articles");
-    res.json({ totalArticles: rows[0].total }); // Mengirim jumlah artikel
+    res.json({ totalArticles: rows[0].total });
   } catch (error) {
     console.error("Error counting articles:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-// Endpoint untuk menghitung jumlah stream
+// Endpoint hitung jumlah stream
 app.get("/api/streams_count", async (req, res) => {
   try {
     const [rows] = await db.query("SELECT COUNT(*) AS total FROM streams");
-    res.json({ totalStream: rows[0].total }); // Mengirim jumlah stream
+    res.json({ totalStream: rows[0].total });
   } catch (error) {
     console.error("Error counting streams:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -544,14 +533,14 @@ app.get("/api/streams_count", async (req, res) => {
 app.get("/api/memory-usage", (req, res) => {
   const memoryUsage = process.memoryUsage();
   res.json({
-    rss: `${(memoryUsage.rss / 1024 / 1024).toFixed(2)} MB`, // Resident Set Size
-    heapTotal: `${(memoryUsage.heapTotal / 1024 / 1024).toFixed(2)} MB`, // Total Heap Size
-    heapUsed: `${(memoryUsage.heapUsed / 1024 / 1024).toFixed(2)} MB`, // Used Heap Size
-    external: `${(memoryUsage.external / 1024 / 1024).toFixed(2)} MB`, // External Memory
+    rss: `${(memoryUsage.rss / 1024 / 1024).toFixed(2)} MB`,
+    heapTotal: `${(memoryUsage.heapTotal / 1024 / 1024).toFixed(2)} MB`,
+    heapUsed: `${(memoryUsage.heapUsed / 1024 / 1024).toFixed(2)} MB`,
+    external: `${(memoryUsage.external / 1024 / 1024).toFixed(2)} MB`,
   });
 });
 
-// Start the server
+// Start server
 const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
