@@ -101,7 +101,7 @@ const unheadPlugins = true ? [CapoPlugin({ track: true })] : [];
 
 const renderSSRHeadOptions = {"omitLineBreaks":false};
 
-const appHead = {"meta":[{"name":"robots","content":"noindex,noarchive,nofollow"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"charset":"utf-8"}],"link":[],"style":[],"script":[{"hid":"adsbygoogle-script","defer":true,"crossorigin":"anonymous","src":"//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-google"},{"hid":"adsbygoogle","innerHTML":"if (!window.__abg_called){ (window.adsbygoogle = window.adsbygoogle || []); adsbygoogle.pauseAdRequests=0;\n      adsbygoogle.push({\n        google_ad_client: \"ca-google\",\n        overlays: {bottom: false},\n        \n      }); window.__abg_called = true;}"}],"noscript":[]};
+const appHead = {"meta":[{"name":"robots","content":"noindex,noarchive,nofollow"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"charset":"utf-8"}],"link":[],"style":[],"script":[{"src":"https://www.googletagmanager.com/gtag/js?id=G-HK89FMZ8X3","async":true},{"hid":"adsbygoogle-script","defer":true,"crossorigin":"anonymous","src":"//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-google"},{"hid":"adsbygoogle","innerHTML":"if (!window.__abg_called){ (window.adsbygoogle = window.adsbygoogle || []); adsbygoogle.pauseAdRequests=0;\n      adsbygoogle.push({\n        google_ad_client: \"ca-google\",\n        overlays: {bottom: false},\n        \n      }); window.__abg_called = true;}"}],"noscript":[]};
 
 const appRootTag = "div";
 
