@@ -669,12 +669,12 @@ const _routes = [
   {
     name: "article-id",
     path: "/article/:id()",
-    component: () => import('./_id_-DX2XqpVi.mjs')
+    component: () => import('./_id_-CNUFIqxx.mjs')
   },
   {
     name: "index",
     path: "/",
-    component: () => import('./index-DvorvdZk.mjs')
+    component: () => import('./index-BIvC1dzt.mjs')
   },
   {
     name: "rikya-components-add_artikel",
@@ -719,12 +719,12 @@ const _routes = [
   {
     name: "stream",
     path: "/stream",
-    component: () => import('./stream-BR8mcE53.mjs')
+    component: () => import('./stream-M7dR_tHV.mjs')
   },
   {
     name: "watch-id",
     path: "/watch/:id()",
-    component: () => import('./_id_-OXwYB8dM.mjs')
+    component: () => import('./_id_-DggA-o19.mjs')
   },
   {
     name: "watch-offline_screen",
@@ -1064,11 +1064,14 @@ const revive_payload_server_eJ33V7gbc6 = /* @__PURE__ */ defineNuxtPlugin({
 const components_plugin_KR1HBZs4kY = /* @__PURE__ */ defineNuxtPlugin({
   name: "nuxt:global-components"
 });
+const google_analytics_pJGHEUVnWz = /* @__PURE__ */ defineNuxtPlugin(() => {
+});
 const plugins = [
   unhead_KgADcZ0jPj,
   plugin,
   revive_payload_server_eJ33V7gbc6,
-  components_plugin_KR1HBZs4kY
+  components_plugin_KR1HBZs4kY,
+  google_analytics_pJGHEUVnWz
 ];
 const layouts = {};
 const LayoutLoader = defineComponent({

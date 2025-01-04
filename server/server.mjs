@@ -26,7 +26,7 @@ console.log("Connected to Redis");
 app.use(
   cors({
     origin: (origin, callback) => {
-      const allowedOrigins = ["// Daftar domain yang diizinkan //"];
+      const allowedOrigins = ["http://localhost:3000", "http://localhost:5000", "http://192.168.1.5", "https://racingstation.top"];
 
       if (!origin) {
         return callback(null, true);
@@ -72,6 +72,20 @@ db.connect((err) => {
   if (err) throw err;
   console.log("Connected to MySQL");
 });
+
+// Keep-alive function untuk koneksi database
+const keepAliveDatabase = () => {
+  setInterval(async () => {
+    try {
+      await db.query("SELECT 1"); // Query ringan untuk menjaga koneksi tetap hidup
+      console.log("Database connection kept alive");
+    } catch (error) {
+      console.error("Error keeping database connection alive:", error);
+    }
+  }, 30000); // Setiap 30 detik
+};
+
+keepAliveDatabase(); // Jalankan fungsi keep-alive
 
 async function cacheMiddleware(req, res, next) {
   const key = req.originalUrl;
