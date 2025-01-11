@@ -101,7 +101,7 @@ const unheadPlugins = true ? [CapoPlugin({ track: true })] : [];
 
 const renderSSRHeadOptions = {"omitLineBreaks":false};
 
-const appHead = {"meta":[{"name":"viewport","content":"width=device-width, initial-scale=1"},{"charset":"utf-8"}],"link":[],"style":[],"script":[{"src":"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js","async":true,"data-ad-client":"ca-pub-4828507555708828"}],"noscript":[],"__dangerouslyDisableSanitizersByTagID":{"gtag-inline":["innerHTML"]}};
+const appHead = {"meta":[{"name":"viewport","content":"width=device-width, initial-scale=1"},{"charset":"utf-8"}],"link":[],"style":[],"script":[{"hid":"adsense","src":"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js","async":true,"data-ad-client":"ca-pub-4828507555708828"}],"noscript":[]};
 
 const appRootTag = "div";
 

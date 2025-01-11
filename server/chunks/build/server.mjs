@@ -669,47 +669,47 @@ const _routes = [
   {
     name: "article-id",
     path: "/article/:id()",
-    component: () => import('./_id_-CNUFIqxx.mjs')
+    component: () => import('./_id_-D82vnV7O.mjs')
   },
   {
     name: "index",
     path: "/",
-    component: () => import('./index-BIvC1dzt.mjs')
+    component: () => import('./index-Cteivl01.mjs')
   },
   {
     name: "rikya-components-add_artikel",
     path: "/rikya/components/add_artikel",
-    component: () => import('./add_artikel-GWDtW4i8.mjs')
+    component: () => import('./add_artikel-D1T1bXJ_.mjs')
   },
   {
     name: "rikya-components-add_livestream",
     path: "/rikya/components/add_livestream",
-    component: () => import('./add_livestream-BB6mf4mN.mjs')
+    component: () => import('./add_livestream-DqT_UJU6.mjs')
   },
   {
     name: "rikya-components-Artikel",
     path: "/rikya/components/Artikel",
-    component: () => import('./Artikel-Bl_SaieL.mjs')
+    component: () => import('./Artikel-Xq6rz7U0.mjs')
   },
   {
     name: "rikya-components-Home",
     path: "/rikya/components/Home",
-    component: () => import('./Home-CJ7OrqjT.mjs')
+    component: () => import('./Home-CS7aWuhP.mjs')
   },
   {
     name: "rikya-components-LiveStream",
     path: "/rikya/components/LiveStream",
-    component: () => import('./LiveStream-CQLeQa-H.mjs')
+    component: () => import('./LiveStream-2b4h0F3o.mjs')
   },
   {
     name: "rikya-edit_artikel-id",
     path: "/rikya/edit_artikel/:id()",
-    component: () => import('./_id_-BMwrSZpo.mjs')
+    component: () => import('./_id_-BAuCTgx3.mjs')
   },
   {
     name: "rikya-edit_stream-id",
     path: "/rikya/edit_stream/:id()",
-    component: () => import('./_id_-XMpvXlCm.mjs')
+    component: () => import('./_id_-DD4-11A8.mjs')
   },
   {
     name: "rikya",
@@ -719,12 +719,12 @@ const _routes = [
   {
     name: "stream",
     path: "/stream",
-    component: () => import('./stream-M7dR_tHV.mjs')
+    component: () => import('./stream-DLGBDf5F.mjs')
   },
   {
     name: "watch-id",
     path: "/watch/:id()",
-    component: () => import('./_id_-DggA-o19.mjs')
+    component: () => import('./_id_-C9XQFA3N.mjs')
   },
   {
     name: "watch-offline_screen",
@@ -844,6 +844,9 @@ const validate = /* @__PURE__ */ defineNuxtRouteMiddleware(async (to) => {
     }
   });
 });
+const adsense_45global = /* @__PURE__ */ defineNuxtRouteMiddleware((to, from) => {
+  console.log("Middleware adsense dijalankan untuk route:", to.fullPath);
+});
 const manifest_45route_45rule = /* @__PURE__ */ defineNuxtRouteMiddleware(async (to) => {
   {
     return;
@@ -851,6 +854,7 @@ const manifest_45route_45rule = /* @__PURE__ */ defineNuxtRouteMiddleware(async 
 });
 const globalMiddleware = [
   validate,
+  adsense_45global,
   manifest_45route_45rule
 ];
 const namedMiddleware = {};
