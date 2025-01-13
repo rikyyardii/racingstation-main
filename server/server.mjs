@@ -299,15 +299,27 @@ app.post("/api/streams", async (req, res) => {
 // Konfigurasi multer untuk menyimpan file di folder public/img
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../public/img"));
+    cb(null, path.join(__dirname, "../public/img")); // Direktori penyimpanan
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+    cb(null, uniqueSuffix + path.extname(file.originalname)); // Nama file unik
   },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage, // Konfigurasi storage
+  limits: {
+    fileSize: 3 * 1024 * 1024, // Batas ukuran file 3MB
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === "image/png") {
+      cb(null, true); // Terima file PNG
+    } else {
+      cb(new Error("Only PNG files are allowed!")); // Tolak file selain PNG
+    }
+  },
+});
 
 // Endpoint upload gambar
 app.post("/api/upload-image", upload.single("image"), (req, res) => {

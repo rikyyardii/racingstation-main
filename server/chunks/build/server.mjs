@@ -679,7 +679,7 @@ const _routes = [
   {
     name: "rikya-components-add_artikel",
     path: "/rikya/components/add_artikel",
-    component: () => import('./add_artikel-D1T1bXJ_.mjs')
+    component: () => import('./add_artikel-C5Ct-afL.mjs')
   },
   {
     name: "rikya-components-add_livestream",
