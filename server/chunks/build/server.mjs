@@ -1,10 +1,10 @@
-import { hasInjectionContext, inject, version, unref, defineComponent, h, computed, ref, provide, shallowReactive, watch, Suspense, nextTick, Fragment, Transition, getCurrentInstance, mergeProps, useSSRContext, createApp, effectScope, reactive, getCurrentScope, onErrorCaptured, onServerPrefetch, createVNode, resolveDynamicComponent, toRef, defineAsyncComponent, shallowRef, isReadonly, withCtx, isRef, isShallow, isReactive, toRaw } from 'vue';
-import { $ as $fetch, l as hasProtocol, m as isScriptProtocol, n as joinURL, w as withQuery, o as defu, p as sanitizeStatusCode, q as createHooks, h as createError$1, t as toRouteMatcher, r as createRouter$1 } from '../runtime.mjs';
+import { hasInjectionContext, inject, version, defineComponent, h, computed, unref, ref, provide, shallowReactive, watch, Suspense, nextTick, Fragment, Transition, mergeProps, useSSRContext, resolveComponent, createApp, effectScope, reactive, getCurrentScope, getCurrentInstance, withCtx, createTextVNode, onErrorCaptured, onServerPrefetch, createVNode, resolveDynamicComponent, toRef, shallowRef, isReadonly, isRef, isShallow, isReactive, toRaw } from 'vue';
+import { $ as $fetch, m as defu, p as parseQuery, n as createHooks, i as createError$1, o as hasProtocol, q as joinURL, r as isScriptProtocol, w as withQuery, t as sanitizeStatusCode, v as withTrailingSlash, x as withoutTrailingSlash, y as toRouteMatcher, z as createRouter$1 } from '../runtime.mjs';
 import { b as baseURL } from '../routes/renderer.mjs';
-import { getActiveHead, CapoPlugin } from 'unhead';
+import { CapoPlugin } from 'unhead';
 import { defineHeadPlugin } from '@unhead/shared';
 import { useRoute as useRoute$1, RouterView, createMemoryHistory, createRouter, START_LOCATION } from 'vue-router';
-import { ssrRenderSuspense, ssrRenderComponent, ssrRenderVNode } from 'vue/server-renderer';
+import { ssrRenderAttrs, ssrRenderAttr, ssrInterpolate, ssrRenderComponent, ssrRenderSuspense, ssrRenderVNode } from 'vue/server-renderer';
 import 'node:http';
 import 'node:https';
 import 'node:fs';
@@ -492,20 +492,10 @@ defineHeadPlugin({
     }
   }
 });
-const headSymbol = "usehead";
 const _global = typeof globalThis !== "undefined" ? globalThis : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
 const globalKey$1 = "__unhead_injection_handler__";
 function setHeadInjectionHandler(handler) {
   _global[globalKey$1] = handler;
-}
-function injectHead() {
-  if (globalKey$1 in _global) {
-    return _global[globalKey$1]();
-  }
-  const head = inject(headSymbol);
-  if (!head && "production" !== "production")
-    console.warn("Unhead is missing Vue context, falling back to shared context. This may have unexpected results.");
-  return head || getActiveHead();
 }
 [CapoPlugin({ track: true })];
 const unhead_KgADcZ0jPj = /* @__PURE__ */ defineNuxtPlugin({
@@ -669,67 +659,67 @@ const _routes = [
   {
     name: "article-id",
     path: "/article/:id()",
-    component: () => import('./_id_-D82vnV7O.mjs')
+    component: () => import('./_id_-0vY2htg4.mjs')
   },
   {
     name: "index",
     path: "/",
-    component: () => import('./index-Cteivl01.mjs')
+    component: () => import('./index-D3o6NgKG.mjs')
   },
   {
     name: "rikya-components-add_artikel",
     path: "/rikya/components/add_artikel",
-    component: () => import('./add_artikel-C5Ct-afL.mjs')
+    component: () => import('./add_artikel-D1ogIb7R.mjs')
   },
   {
     name: "rikya-components-add_livestream",
     path: "/rikya/components/add_livestream",
-    component: () => import('./add_livestream-DqT_UJU6.mjs')
+    component: () => import('./add_livestream-BxhE_271.mjs')
   },
   {
     name: "rikya-components-Artikel",
     path: "/rikya/components/Artikel",
-    component: () => import('./Artikel-Xq6rz7U0.mjs')
+    component: () => import('./Artikel-DTnjxHHM.mjs')
   },
   {
     name: "rikya-components-Home",
     path: "/rikya/components/Home",
-    component: () => import('./Home-CS7aWuhP.mjs')
+    component: () => import('./Home-DQMqpDfG.mjs')
   },
   {
     name: "rikya-components-LiveStream",
     path: "/rikya/components/LiveStream",
-    component: () => import('./LiveStream-2b4h0F3o.mjs')
+    component: () => import('./LiveStream-ezrx8RAG.mjs')
   },
   {
     name: "rikya-edit_artikel-id",
     path: "/rikya/edit_artikel/:id()",
-    component: () => import('./_id_-BAuCTgx3.mjs')
+    component: () => import('./_id_-XOOZyBQt.mjs')
   },
   {
     name: "rikya-edit_stream-id",
     path: "/rikya/edit_stream/:id()",
-    component: () => import('./_id_-DD4-11A8.mjs')
+    component: () => import('./_id_-Oqe8Ngwi.mjs')
   },
   {
     name: "rikya",
     path: "/rikya",
-    component: () => import('./index-2kqhCm5K.mjs')
+    component: () => import('./index-DPhwtXBP.mjs')
   },
   {
     name: "stream",
     path: "/stream",
-    component: () => import('./stream-DLGBDf5F.mjs')
+    component: () => import('./stream-4Y0GMW-j.mjs')
   },
   {
     name: "watch-id",
     path: "/watch/:id()",
-    component: () => import('./_id_-C9XQFA3N.mjs')
+    component: () => import('./_id_-IpXpQsnf.mjs')
   },
   {
     name: "watch-offline_screen",
     path: "/watch/offline_screen",
-    component: () => import('./offline_screen-C5GPpx4d.mjs')
+    component: () => import('./offline_screen-CHYgxDwO.mjs')
   }
 ];
 const _wrapIf = (component, props, slots) => {
@@ -807,6 +797,7 @@ function _getHashElementScrollMarginTop(selector) {
   return 0;
 }
 const configRouterOptions = {
+  strict: true,
   hashMode: false,
   scrollBehaviorType: "auto"
 };
@@ -844,9 +835,6 @@ const validate = /* @__PURE__ */ defineNuxtRouteMiddleware(async (to) => {
     }
   });
 });
-const adsense_45global = /* @__PURE__ */ defineNuxtRouteMiddleware((to, from) => {
-  console.log("Middleware adsense dijalankan untuk route:", to.fullPath);
-});
 const manifest_45route_45rule = /* @__PURE__ */ defineNuxtRouteMiddleware(async (to) => {
   {
     return;
@@ -854,7 +842,6 @@ const manifest_45route_45rule = /* @__PURE__ */ defineNuxtRouteMiddleware(async 
 });
 const globalMiddleware = [
   validate,
-  adsense_45global,
   manifest_45route_45rule
 ];
 const namedMiddleware = {};
@@ -1090,7 +1077,7 @@ const LayoutLoader = defineComponent({
     return () => h(LayoutComponent, props.layoutProps, context.slots);
   }
 });
-const __nuxt_component_0 = defineComponent({
+const __nuxt_component_0$1 = defineComponent({
   name: "NuxtLayout",
   inheritAttrs: false,
   props: {
@@ -1328,7 +1315,7 @@ const _export_sfc = (sfc, props) => {
 };
 const _sfc_main$2 = {};
 function _sfc_ssrRender(_ctx, _push, _parent, _attrs) {
-  const _component_NuxtLayout = __nuxt_component_0;
+  const _component_NuxtLayout = __nuxt_component_0$1;
   const _component_NuxtPage = __nuxt_component_1;
   _push(ssrRenderComponent(_component_NuxtLayout, _attrs, {
     default: withCtx((_, _push2, _parent2, _scopeId) => {
@@ -1350,41 +1337,335 @@ _sfc_main$2.setup = (props, ctx) => {
   return _sfc_setup$2 ? _sfc_setup$2(props, ctx) : void 0;
 };
 const AppComponent = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["ssrRender", _sfc_ssrRender]]);
-const _sfc_main$1 = {
-  __name: "nuxt-error-page",
-  __ssrInlineRender: true,
-  props: {
-    error: Object
-  },
-  setup(__props) {
-    const props = __props;
-    const _error = props.error;
-    _error.stack ? _error.stack.split("\n").splice(1).map((line) => {
-      const text = line.replace("webpack:/", "").replace(".vue", ".js").trim();
-      return {
-        text,
-        internal: line.includes("node_modules") && !line.includes(".cache") || line.includes("internal") || line.includes("new Promise")
+async function preloadRouteComponents(to, router = useRouter()) {
+  {
+    return;
+  }
+}
+const firstNonUndefined = (...args) => args.find((arg) => arg !== void 0);
+// @__NO_SIDE_EFFECTS__
+function defineNuxtLink(options) {
+  const componentName = options.componentName || "NuxtLink";
+  function resolveTrailingSlashBehavior(to, resolve) {
+    if (!to || options.trailingSlash !== "append" && options.trailingSlash !== "remove") {
+      return to;
+    }
+    if (typeof to === "string") {
+      return applyTrailingSlashBehavior(to, options.trailingSlash);
+    }
+    const path = "path" in to && to.path !== void 0 ? to.path : resolve(to).path;
+    const resolvedPath = {
+      ...to,
+      name: void 0,
+      // named routes would otherwise always override trailing slash behavior
+      path: applyTrailingSlashBehavior(path, options.trailingSlash)
+    };
+    return resolvedPath;
+  }
+  function useNuxtLink(props) {
+    const router = useRouter();
+    const config = /* @__PURE__ */ useRuntimeConfig();
+    const hasTarget = computed(() => !!props.target && props.target !== "_self");
+    const isAbsoluteUrl = computed(() => {
+      const path = props.to || props.href || "";
+      return typeof path === "string" && hasProtocol(path, { acceptRelative: true });
+    });
+    const builtinRouterLink = resolveComponent("RouterLink");
+    const useBuiltinLink = builtinRouterLink && typeof builtinRouterLink !== "string" ? builtinRouterLink.useLink : void 0;
+    const isExternal = computed(() => {
+      if (props.external) {
+        return true;
+      }
+      const path = props.to || props.href || "";
+      if (typeof path === "object") {
+        return false;
+      }
+      return path === "" || isAbsoluteUrl.value;
+    });
+    const to = computed(() => {
+      const path = props.to || props.href || "";
+      if (isExternal.value) {
+        return path;
+      }
+      return resolveTrailingSlashBehavior(path, router.resolve);
+    });
+    const link = isExternal.value ? void 0 : useBuiltinLink == null ? void 0 : useBuiltinLink({ ...props, to });
+    const href = computed(() => {
+      var _a;
+      if (!to.value || isAbsoluteUrl.value) {
+        return to.value;
+      }
+      if (isExternal.value) {
+        const path = typeof to.value === "object" && "path" in to.value ? resolveRouteObject(to.value) : to.value;
+        const href2 = typeof path === "object" ? router.resolve(path).href : path;
+        return resolveTrailingSlashBehavior(
+          href2,
+          router.resolve
+          /* will not be called */
+        );
+      }
+      if (typeof to.value === "object") {
+        return ((_a = router.resolve(to.value)) == null ? void 0 : _a.href) ?? null;
+      }
+      return resolveTrailingSlashBehavior(
+        joinURL(config.app.baseURL, to.value),
+        router.resolve
+        /* will not be called */
+      );
+    });
+    return {
+      to,
+      hasTarget,
+      isAbsoluteUrl,
+      isExternal,
+      //
+      href,
+      isActive: (link == null ? void 0 : link.isActive) ?? computed(() => to.value === router.currentRoute.value.path),
+      isExactActive: (link == null ? void 0 : link.isExactActive) ?? computed(() => to.value === router.currentRoute.value.path),
+      route: (link == null ? void 0 : link.route) ?? computed(() => router.resolve(to.value)),
+      async navigate() {
+        await navigateTo(href.value, { replace: props.replace, external: isExternal.value || hasTarget.value });
+      }
+    };
+  }
+  return defineComponent({
+    name: componentName,
+    props: {
+      // Routing
+      to: {
+        type: [String, Object],
+        default: void 0,
+        required: false
+      },
+      href: {
+        type: [String, Object],
+        default: void 0,
+        required: false
+      },
+      // Attributes
+      target: {
+        type: String,
+        default: void 0,
+        required: false
+      },
+      rel: {
+        type: String,
+        default: void 0,
+        required: false
+      },
+      noRel: {
+        type: Boolean,
+        default: void 0,
+        required: false
+      },
+      // Prefetching
+      prefetch: {
+        type: Boolean,
+        default: void 0,
+        required: false
+      },
+      prefetchOn: {
+        type: [String, Object],
+        default: void 0,
+        required: false
+      },
+      noPrefetch: {
+        type: Boolean,
+        default: void 0,
+        required: false
+      },
+      // Styling
+      activeClass: {
+        type: String,
+        default: void 0,
+        required: false
+      },
+      exactActiveClass: {
+        type: String,
+        default: void 0,
+        required: false
+      },
+      prefetchedClass: {
+        type: String,
+        default: void 0,
+        required: false
+      },
+      // Vue Router's `<RouterLink>` additional props
+      replace: {
+        type: Boolean,
+        default: void 0,
+        required: false
+      },
+      ariaCurrentValue: {
+        type: String,
+        default: void 0,
+        required: false
+      },
+      // Edge cases handling
+      external: {
+        type: Boolean,
+        default: void 0,
+        required: false
+      },
+      // Slot API
+      custom: {
+        type: Boolean,
+        default: void 0,
+        required: false
+      }
+    },
+    useLink: useNuxtLink,
+    setup(props, { slots }) {
+      const router = useRouter();
+      const { to, href, navigate, isExternal, hasTarget, isAbsoluteUrl } = useNuxtLink(props);
+      const prefetched = ref(false);
+      const el = void 0;
+      const elRef = void 0;
+      function shouldPrefetch(mode) {
+        var _a, _b;
+        return !prefetched.value && (typeof props.prefetchOn === "string" ? props.prefetchOn === mode : ((_a = props.prefetchOn) == null ? void 0 : _a[mode]) ?? ((_b = options.prefetchOn) == null ? void 0 : _b[mode])) && (props.prefetch ?? options.prefetch) !== false && props.noPrefetch !== true && props.target !== "_blank" && !isSlowConnection();
+      }
+      async function prefetch(nuxtApp = useNuxtApp()) {
+        if (prefetched.value) {
+          return;
+        }
+        prefetched.value = true;
+        const path = typeof to.value === "string" ? to.value : isExternal.value ? resolveRouteObject(to.value) : router.resolve(to.value).fullPath;
+        await Promise.all([
+          nuxtApp.hooks.callHook("link:prefetch", path).catch(() => {
+          }),
+          !isExternal.value && !hasTarget.value && preloadRouteComponents(to.value, router).catch(() => {
+          })
+        ]);
+      }
+      return () => {
+        var _a;
+        if (!isExternal.value && !hasTarget.value) {
+          const routerLinkProps = {
+            ref: elRef,
+            to: to.value,
+            activeClass: props.activeClass || options.activeClass,
+            exactActiveClass: props.exactActiveClass || options.exactActiveClass,
+            replace: props.replace,
+            ariaCurrentValue: props.ariaCurrentValue,
+            custom: props.custom
+          };
+          if (!props.custom) {
+            if (shouldPrefetch("interaction")) {
+              routerLinkProps.onPointerenter = prefetch.bind(null, void 0);
+              routerLinkProps.onFocus = prefetch.bind(null, void 0);
+            }
+            if (prefetched.value) {
+              routerLinkProps.class = props.prefetchedClass || options.prefetchedClass;
+            }
+            routerLinkProps.rel = props.rel || void 0;
+          }
+          return h(
+            resolveComponent("RouterLink"),
+            routerLinkProps,
+            slots.default
+          );
+        }
+        const target = props.target || null;
+        const rel = firstNonUndefined(
+          // converts `""` to `null` to prevent the attribute from being added as empty (`rel=""`)
+          props.noRel ? "" : props.rel,
+          options.externalRelAttribute,
+          /*
+          * A fallback rel of `noopener noreferrer` is applied for external links or links that open in a new tab.
+          * This solves a reverse tabnapping security flaw in browsers pre-2021 as well as improving privacy.
+          */
+          isAbsoluteUrl.value || hasTarget.value ? "noopener noreferrer" : ""
+        ) || null;
+        if (props.custom) {
+          if (!slots.default) {
+            return null;
+          }
+          return slots.default({
+            href: href.value,
+            navigate,
+            prefetch,
+            get route() {
+              if (!href.value) {
+                return void 0;
+              }
+              const url = new URL(href.value, "http://localhost");
+              return {
+                path: url.pathname,
+                fullPath: url.pathname,
+                get query() {
+                  return parseQuery(url.search);
+                },
+                hash: url.hash,
+                params: {},
+                name: void 0,
+                matched: [],
+                redirectedFrom: void 0,
+                meta: {},
+                href: href.value
+              };
+            },
+            rel,
+            target,
+            isExternal: isExternal.value || hasTarget.value,
+            isActive: false,
+            isExactActive: false
+          });
+        }
+        return h("a", { ref: el, href: href.value || null, rel, target }, (_a = slots.default) == null ? void 0 : _a.call(slots));
       };
-    }).map((i) => `<span class="stack${i.internal ? " internal" : ""}">${i.text}</span>`).join("\n") : "";
-    const statusCode = Number(_error.statusCode || 500);
-    const is404 = statusCode === 404;
-    const statusMessage = _error.statusMessage ?? (is404 ? "Page Not Found" : "Internal Server Error");
-    const description = _error.message || _error.toString();
-    const stack = void 0;
-    const _Error404 = defineAsyncComponent(() => import('./error-404-CtyX-u99.mjs'));
-    const _Error = defineAsyncComponent(() => import('./error-500-28Q5K_1e.mjs'));
-    const ErrorTemplate = is404 ? _Error404 : _Error;
+    }
+  });
+}
+const __nuxt_component_0 = /* @__PURE__ */ defineNuxtLink(nuxtLinkDefaults);
+function applyTrailingSlashBehavior(to, trailingSlash) {
+  const normalizeFn = trailingSlash === "append" ? withTrailingSlash : withoutTrailingSlash;
+  const hasProtocolDifferentFromHttp = hasProtocol(to) && !to.startsWith("http");
+  if (hasProtocolDifferentFromHttp) {
+    return to;
+  }
+  return normalizeFn(to, true);
+}
+function isSlowConnection() {
+  {
+    return;
+  }
+}
+const _imports_0 = "" + __buildAssetsURL("logo.BWaCgwa0.png");
+const _sfc_main$1 = {
+  __name: "error",
+  __ssrInlineRender: true,
+  props: ["error"],
+  setup(__props) {
     return (_ctx, _push, _parent, _attrs) => {
-      _push(ssrRenderComponent(unref(ErrorTemplate), mergeProps({ statusCode: unref(statusCode), statusMessage: unref(statusMessage), description: unref(description), stack: unref(stack) }, _attrs), null, _parent));
+      const _component_NuxtLink = __nuxt_component_0;
+      _push(`<div${ssrRenderAttrs(mergeProps({ class: "error-container" }, _attrs))} data-v-26c4567e><div class="spiral-background" data-v-26c4567e></div><div class="content" data-v-26c4567e><div class="logo-container animate-fade-in" data-v-26c4567e><img${ssrRenderAttr("src", _imports_0)} alt="Racing Station Logo" class="logo animate-float" data-v-26c4567e></div><h1 class="animate-slide-up" data-v-26c4567e>${ssrInterpolate(__props.error.statusCode)}</h1><h2 class="animate-slide-up animation-delay-1" data-v-26c4567e>${ssrInterpolate(__props.error.message)}</h2><p class="animate-slide-up animation-delay-2" data-v-26c4567e>Looks like we&#39;ve taken a wrong turn on the track!</p>`);
+      _push(ssrRenderComponent(_component_NuxtLink, {
+        to: "/",
+        class: "back-button"
+      }, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(` Go back home `);
+          } else {
+            return [
+              createTextVNode(" Go back home ")
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+      _push(`</div></div>`);
     };
   }
 };
 const _sfc_setup$1 = _sfc_main$1.setup;
 _sfc_main$1.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
-  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/nuxt/dist/app/components/nuxt-error-page.vue");
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("error.vue");
   return _sfc_setup$1 ? _sfc_setup$1(props, ctx) : void 0;
 };
+const ErrorComponent = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-26c4567e"]]);
 const _sfc_main = {
   __name: "nuxt-root",
   __ssrInlineRender: true,
@@ -1413,7 +1694,7 @@ const _sfc_main = {
           if (unref(abortRender)) {
             _push(`<div></div>`);
           } else if (unref(error)) {
-            _push(ssrRenderComponent(unref(_sfc_main$1), { error: unref(error) }, null, _parent));
+            _push(ssrRenderComponent(unref(ErrorComponent), { error: unref(error) }, null, _parent));
           } else if (unref(islandContext)) {
             _push(ssrRenderComponent(unref(IslandRenderer), { context: unref(islandContext) }, null, _parent));
           } else if (unref(SingleRenderer)) {
@@ -1453,5 +1734,5 @@ let entry;
 }
 const entry$1 = (ssrContext) => entry(ssrContext);
 
-export { _export_sfc as _, useRouter as a, useRoute as b, resolveRouteObject as c, navigateTo as d, entry$1 as default, useNuxtApp as e, injectHead as i, nuxtLinkDefaults as n, resolveUnrefHeadInput as r, useRuntimeConfig as u };
+export { _imports_0 as _, useRouter as a, __nuxt_component_0 as b, _export_sfc as c, useRoute as d, entry$1 as default, useRuntimeConfig as u };
 //# sourceMappingURL=server.mjs.map

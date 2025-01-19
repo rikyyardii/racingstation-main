@@ -2,7 +2,6 @@ import express from "express";
 import mysql from "mysql2/promise";
 import cors from "cors";
 import session from "express-session";
-import { EventEmitter } from "node:events";
 import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -260,33 +259,37 @@ const generateUniqueStreamSlug = async (title) => {
 
 // Endpoint menyimpan stream
 app.post("/api/streams", async (req, res) => {
-  const { title, event, excerpt, link, content, imagePath } = req.body;
+  const { title, event, excerpt, link, link2, link3, link4, content, imagePath } = req.body;
 
   try {
     // Buat slug unik berdasarkan judul
     const slug = await generateUniqueStreamSlug(title);
 
-    // ambil waktu lokal berdasarkan komputer yang digunakan
+    // Ambil waktu lokal dengan offset zona waktu Asia/Jakarta (+7 jam)
     const now = new Date();
-    const options = {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-      timeZone: "Asia/Jakarta",
-    };
-    const localTime = new Intl.DateTimeFormat("en-CA", options).format(now).replace(/\//g, "-").replace(", ", " ");
-    const formattedCreatedAt = localTime.replace("T", " ");
+    const utcTime = new Date(now.getTime() + now.getTimezoneOffset() * 60 * 1000); // Waktu UTC
+    const jakartaTime = new Date(utcTime.getTime() + 7 * 60 * 60 * 1000); // Tambahkan 7 jam untuk Asia/Jakarta
+
+    // Format waktu menjadi string yang valid untuk MySQL (YYYY-MM-DD HH:mm:ss)
+    const year = jakartaTime.getFullYear();
+    const month = String(jakartaTime.getMonth() + 1).padStart(2, "0");
+    const date = String(jakartaTime.getDate()).padStart(2, "0");
+    let hours = jakartaTime.getHours();
+    const minutes = String(jakartaTime.getMinutes()).padStart(2, "0");
+    const seconds = String(jakartaTime.getSeconds()).padStart(2, "0");
+
+    // Jika jam adalah 24, ubah menjadi 00
+    if (hours === 24) hours = 0;
+    hours = String(hours).padStart(2, "0");
+
+    const formattedCreatedAt = `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
 
     // Query untuk menyimpan stream
     const query = `
-      INSERT INTO streams (slug, title, event, excerpt, link, content, image_path, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO streams (slug, title, event, excerpt, link, link2, link3, link4, content, image_path, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
-    const values = [slug, title, event, excerpt, link, content, imagePath, formattedCreatedAt];
+    const values = [slug, title, event, excerpt, link, link2, link3, link4, content, imagePath, formattedCreatedAt];
 
     await db.execute(query, values);
     res.status(201).send({ message: "Stream created successfully", slug });
@@ -368,7 +371,7 @@ app.get("/api/streams/:slug", async (req, res) => {
 // Edit Stream
 app.put("/api/streams/:slug", async (req, res) => {
   const { slug } = req.params;
-  const { title, event, excerpt, link, content, status } = req.body;
+  const { title, event, excerpt, link, link2, link3, link4, content, status } = req.body;
 
   // cek slug valid
   if (!slug) {
@@ -376,7 +379,7 @@ app.put("/api/streams/:slug", async (req, res) => {
   }
 
   // cek inputan form
-  if (!title && !excerpt && !link && !content && !status) {
+  if (!title && !excerpt && !link && !link2 && !link3 && !link4 && !content && !status) {
     return res.status(400).json({ error: "Tidak ada data yang dikirim untuk pembaruan" });
   }
 
@@ -404,6 +407,18 @@ app.put("/api/streams/:slug", async (req, res) => {
     if (link) {
       updates.push("link = ?");
       values.push(link);
+    }
+    if (link2) {
+      updates.push("link2 = ?");
+      values.push(link2);
+    }
+    if (link3) {
+      updates.push("link3 = ?");
+      values.push(link3);
+    }
+    if (link4) {
+      updates.push("link4 = ?");
+      values.push(link4);
     }
     if (content) {
       updates.push("content = ?");
