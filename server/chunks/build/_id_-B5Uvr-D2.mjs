@@ -5,7 +5,6 @@ import { useRoute } from 'vue-router';
 import { F as Footer } from './Footer-3ik4tbsg.mjs';
 import { A as Adsense } from './Adsense-BQOULn5G.mjs';
 import { SunIcon, MoonIcon, MenuIcon, XIcon, ArrowLeft, Calendar, User, Clock } from 'lucide-vue-next';
-import { u as useSeoMeta } from './index-CFzRD-82.mjs';
 import '../runtime.mjs';
 import 'node:http';
 import 'node:https';
@@ -37,6 +36,8 @@ const _sfc_main = {
     const isDarkMode = ref(true);
     const menuItems = ["Latest News", "Watch Sports"];
     const currentView = ref("Detailed Article");
+    computed(() => articleTitle.value || "Default Title");
+    computed(() => `Details about ${articleTitle.value || "this article"}`);
     const formatDate = (dateString) => {
       const options = { year: "numeric", month: "long", day: "numeric" };
       const date = new Date(dateString);
@@ -55,16 +56,6 @@ const _sfc_main = {
       }
       return `${IMAGE_URL}/public/img/${image}`;
     };
-    const seoTitle = computed(() => articleTitle.value || "Default Title");
-    const seoDescription = computed(() => `Details about ${articleTitle.value || "this article"}`);
-    useSeoMeta({
-      title: seoTitle,
-      ogTitle: seoTitle,
-      description: seoDescription,
-      ogDescription: seoDescription,
-      ogImage: computed(() => getImagePath(articleImage.value)),
-      twitterCard: "summary_large_image"
-    });
     const fetchArticle = async (slug2) => {
       const router = useRouter();
       try {
@@ -165,4 +156,4 @@ _sfc_main.setup = (props, ctx) => {
 };
 
 export { _sfc_main as default };
-//# sourceMappingURL=_id_-xvrxnKJS.mjs.map
+//# sourceMappingURL=_id_-B5Uvr-D2.mjs.map

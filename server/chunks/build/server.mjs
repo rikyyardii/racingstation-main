@@ -669,7 +669,7 @@ const _routes = [
   {
     name: "article-id",
     path: "/article/:id()",
-    component: () => import('./_id_-xvrxnKJS.mjs')
+    component: () => import('./_id_-B5Uvr-D2.mjs')
   },
   {
     name: "index",
