@@ -5603,109 +5603,102 @@ var auth_41 = {};
 
 const require$$0$3 = /*@__PURE__*/getDefaultExportFromNamespaceIfNotNamed(require$$1$3);
 
-var hasRequiredAuth_41;
+(function (exports) {
 
-function requireAuth_41 () {
-	if (hasRequiredAuth_41) return auth_41;
-	hasRequiredAuth_41 = 1;
-	(function (exports) {
+	/*
+	4.1 authentication: (http://bazaar.launchpad.net/~mysql/mysql-server/5.5/view/head:/sql/password.c)
 
-		/*
-		4.1 authentication: (http://bazaar.launchpad.net/~mysql/mysql-server/5.5/view/head:/sql/password.c)
+	  SERVER:  public_seed=create_random_string()
+	           send(public_seed)
 
-		  SERVER:  public_seed=create_random_string()
-		           send(public_seed)
+	  CLIENT:  recv(public_seed)
+	           hash_stage1=sha1("password")
+	           hash_stage2=sha1(hash_stage1)
+	           reply=xor(hash_stage1, sha1(public_seed,hash_stage2)
 
-		  CLIENT:  recv(public_seed)
-		           hash_stage1=sha1("password")
-		           hash_stage2=sha1(hash_stage1)
-		           reply=xor(hash_stage1, sha1(public_seed,hash_stage2)
+	           // this three steps are done in scramble()
 
-		           // this three steps are done in scramble()
-
-		           send(reply)
+	           send(reply)
 
 
-		  SERVER:  recv(reply)
-		           hash_stage1=xor(reply, sha1(public_seed,hash_stage2))
-		           candidate_hash2=sha1(hash_stage1)
-		           check(candidate_hash2==hash_stage2)
+	  SERVER:  recv(reply)
+	           hash_stage1=xor(reply, sha1(public_seed,hash_stage2))
+	           candidate_hash2=sha1(hash_stage1)
+	           check(candidate_hash2==hash_stage2)
 
-		server stores sha1(sha1(password)) ( hash_stag2)
-		*/
+	server stores sha1(sha1(password)) ( hash_stag2)
+	*/
 
-		const crypto = require$$0$3;
+	const crypto = require$$0$3;
 
-		function sha1(msg, msg1, msg2) {
-		  const hash = crypto.createHash('sha1');
-		  hash.update(msg);
-		  if (msg1) {
-		    hash.update(msg1);
-		  }
+	function sha1(msg, msg1, msg2) {
+	  const hash = crypto.createHash('sha1');
+	  hash.update(msg);
+	  if (msg1) {
+	    hash.update(msg1);
+	  }
 
-		  if (msg2) {
-		    hash.update(msg2);
-		  }
+	  if (msg2) {
+	    hash.update(msg2);
+	  }
 
-		  return hash.digest();
-		}
+	  return hash.digest();
+	}
 
-		function xor(a, b) {
-		  const result = Buffer.allocUnsafe(a.length);
-		  for (let i = 0; i < a.length; i++) {
-		    result[i] = a[i] ^ b[i];
-		  }
-		  return result;
-		}
+	function xor(a, b) {
+	  const result = Buffer.allocUnsafe(a.length);
+	  for (let i = 0; i < a.length; i++) {
+	    result[i] = a[i] ^ b[i];
+	  }
+	  return result;
+	}
 
-		exports.xor = xor;
+	exports.xor = xor;
 
-		function token(password, scramble1, scramble2) {
-		  if (!password) {
-		    return Buffer.alloc(0);
-		  }
-		  const stage1 = sha1(password);
-		  return exports.calculateTokenFromPasswordSha(stage1, scramble1, scramble2);
-		}
+	function token(password, scramble1, scramble2) {
+	  if (!password) {
+	    return Buffer.alloc(0);
+	  }
+	  const stage1 = sha1(password);
+	  return exports.calculateTokenFromPasswordSha(stage1, scramble1, scramble2);
+	}
 
-		exports.calculateTokenFromPasswordSha = function(
-		  passwordSha,
-		  scramble1,
-		  scramble2
-		) {
-		  // we use AUTH 41 here, and we need only the bytes we just need.
-		  const authPluginData1 = scramble1.slice(0, 8);
-		  const authPluginData2 = scramble2.slice(0, 12);
-		  const stage2 = sha1(passwordSha);
-		  const stage3 = sha1(authPluginData1, authPluginData2, stage2);
-		  return xor(stage3, passwordSha);
-		};
+	exports.calculateTokenFromPasswordSha = function(
+	  passwordSha,
+	  scramble1,
+	  scramble2
+	) {
+	  // we use AUTH 41 here, and we need only the bytes we just need.
+	  const authPluginData1 = scramble1.slice(0, 8);
+	  const authPluginData2 = scramble2.slice(0, 12);
+	  const stage2 = sha1(passwordSha);
+	  const stage3 = sha1(authPluginData1, authPluginData2, stage2);
+	  return xor(stage3, passwordSha);
+	};
 
-		exports.calculateToken = token;
+	exports.calculateToken = token;
 
-		exports.verifyToken = function(publicSeed1, publicSeed2, token, doubleSha) {
-		  const hashStage1 = xor(token, sha1(publicSeed1, publicSeed2, doubleSha));
-		  const candidateHash2 = sha1(hashStage1);
-		  return candidateHash2.compare(doubleSha) === 0;
-		};
+	exports.verifyToken = function(publicSeed1, publicSeed2, token, doubleSha) {
+	  const hashStage1 = xor(token, sha1(publicSeed1, publicSeed2, doubleSha));
+	  const candidateHash2 = sha1(hashStage1);
+	  return candidateHash2.compare(doubleSha) === 0;
+	};
 
-		exports.doubleSha1 = function(password) {
-		  return sha1(sha1(password));
-		};
+	exports.doubleSha1 = function(password) {
+	  return sha1(sha1(password));
+	};
 
-		function xorRotating(a, seed) {
-		  const result = Buffer.allocUnsafe(a.length);
-		  const seedLen = seed.length;
+	function xorRotating(a, seed) {
+	  const result = Buffer.allocUnsafe(a.length);
+	  const seedLen = seed.length;
 
-		  for (let i = 0; i < a.length; i++) {
-		    result[i] = a[i] ^ seed[i % seedLen];
-		  }
-		  return result;
-		}
-		exports.xorRotating = xorRotating; 
-	} (auth_41));
-	return auth_41;
-}
+	  for (let i = 0; i < a.length; i++) {
+	    result[i] = a[i] ^ seed[i % seedLen];
+	  }
+	  return result;
+	}
+	exports.xorRotating = xorRotating; 
+} (auth_41));
 
 var charset_encodings;
 var hasRequiredCharset_encodings;
@@ -6034,7 +6027,7 @@ function requireCharset_encodings () {
 const CommandCode$4 = commands$1;
 const ClientConstants$7 = client;
 const Packet$d = packet;
-const auth41$2 = requireAuth_41();
+const auth41$3 = auth_41;
 const CharsetToEncoding$7 = requireCharset_encodings();
 
 // https://dev.mysql.com/doc/internals/en/com-change-user.html#packet-COM_CHANGE_USER
@@ -6050,13 +6043,13 @@ let ChangeUser$2 = class ChangeUser {
     this.connectAttributes = opts.connectAttrinutes || {};
     let authToken;
     if (this.passwordSha1) {
-      authToken = auth41$2.calculateTokenFromPasswordSha(
+      authToken = auth41$3.calculateTokenFromPasswordSha(
         this.passwordSha1,
         this.authPluginData1,
         this.authPluginData2
       );
     } else {
-      authToken = auth41$2.calculateToken(
+      authToken = auth41$3.calculateToken(
         this.password,
         this.authPluginData1,
         this.authPluginData2
@@ -6781,7 +6774,7 @@ const ClientConstants$5 = client;
 const CharsetToEncoding$4 = requireCharset_encodings();
 const Packet$8 = packet;
 
-const auth41$1 = requireAuth_41();
+const auth41$2 = auth_41;
 
 class HandshakeResponse {
   constructor(handshake) {
@@ -6796,13 +6789,13 @@ class HandshakeResponse {
     // TODO: pre-4.1 auth support
     let authToken;
     if (this.passwordSha1) {
-      authToken = auth41$1.calculateTokenFromPasswordSha(
+      authToken = auth41$2.calculateTokenFromPasswordSha(
         this.passwordSha1,
         this.authPluginData1,
         this.authPluginData2
       );
     } else {
-      authToken = auth41$1.calculateToken(
+      authToken = auth41$2.calculateToken(
         this.password,
         this.authPluginData1,
         this.authPluginData2
@@ -7528,252 +7521,216 @@ let Command$b = class Command extends EventEmitter {
 
 var command = Command$b;
 
-var sha256_password;
-var hasRequiredSha256_password;
+const PLUGIN_NAME$1 = 'sha256_password';
+const crypto$1 = require$$0$3;
+const { xorRotating: xorRotating$1 } = auth_41;
 
-function requireSha256_password () {
-	if (hasRequiredSha256_password) return sha256_password;
-	hasRequiredSha256_password = 1;
+const REQUEST_SERVER_KEY_PACKET$1 = Buffer.from([1]);
 
-	const PLUGIN_NAME = 'sha256_password';
-	const crypto = require$$0$3;
-	const { xorRotating } = requireAuth_41();
+const STATE_INITIAL$1 = 0;
+const STATE_WAIT_SERVER_KEY$1 = 1;
+const STATE_FINAL$1 = -1;
 
-	const REQUEST_SERVER_KEY_PACKET = Buffer.from([1]);
-
-	const STATE_INITIAL = 0;
-	const STATE_WAIT_SERVER_KEY = 1;
-	const STATE_FINAL = -1;
-
-	function encrypt(password, scramble, key) {
-	  const stage1 = xorRotating(
-	    Buffer.from(`${password}\0`, 'utf8'),
-	    scramble
-	  );
-	  return crypto.publicEncrypt(key, stage1);
-	}
-
-	sha256_password = (pluginOptions = {}) => ({ connection }) => {
-	  let state = 0;
-	  let scramble = null;
-
-	  const password = connection.config.password;
-
-	  const authWithKey = serverKey => {
-	    const _password = encrypt(password, scramble, serverKey);
-	    state = STATE_FINAL;
-	    return _password;
-	  };
-
-	  return data => {
-	    switch (state) {
-	      case STATE_INITIAL:
-	        scramble = data.slice(0, 20);
-	        // if client provides key we can save one extra roundrip on first connection
-	        if (pluginOptions.serverPublicKey) {
-	          return authWithKey(pluginOptions.serverPublicKey);
-	        }
-
-	        state = STATE_WAIT_SERVER_KEY;
-	        return REQUEST_SERVER_KEY_PACKET;
-
-	      case STATE_WAIT_SERVER_KEY:
-	        if (pluginOptions.onServerPublicKey) {
-	          pluginOptions.onServerPublicKey(data);
-	        }
-	        return authWithKey(data);
-	      case STATE_FINAL:
-	        throw new Error(
-	          `Unexpected data in AuthMoreData packet received by ${PLUGIN_NAME} plugin in STATE_FINAL state.`
-	        );
-	    }
-
-	    throw new Error(
-	      `Unexpected data in AuthMoreData packet received by ${PLUGIN_NAME} plugin in state ${state}`
-	    );
-	  };
-	};
-	return sha256_password;
+function encrypt$1(password, scramble, key) {
+  const stage1 = xorRotating$1(
+    Buffer.from(`${password}\0`, 'utf8'),
+    scramble
+  );
+  return crypto$1.publicEncrypt(key, stage1);
 }
 
-var caching_sha2_password;
-var hasRequiredCaching_sha2_password;
+var sha256_password = (pluginOptions = {}) => ({ connection }) => {
+  let state = 0;
+  let scramble = null;
 
-function requireCaching_sha2_password () {
-	if (hasRequiredCaching_sha2_password) return caching_sha2_password;
-	hasRequiredCaching_sha2_password = 1;
+  const password = connection.config.password;
 
-	// https://mysqlserverteam.com/mysql-8-0-4-new-default-authentication-plugin-caching_sha2_password/
+  const authWithKey = serverKey => {
+    const _password = encrypt$1(password, scramble, serverKey);
+    state = STATE_FINAL$1;
+    return _password;
+  };
 
-	const PLUGIN_NAME = 'caching_sha2_password';
-	const crypto = require$$0$3;
-	const { xor, xorRotating } = requireAuth_41();
+  return data => {
+    switch (state) {
+      case STATE_INITIAL$1:
+        scramble = data.slice(0, 20);
+        // if client provides key we can save one extra roundrip on first connection
+        if (pluginOptions.serverPublicKey) {
+          return authWithKey(pluginOptions.serverPublicKey);
+        }
 
-	const REQUEST_SERVER_KEY_PACKET = Buffer.from([2]);
-	const FAST_AUTH_SUCCESS_PACKET = Buffer.from([3]);
-	const PERFORM_FULL_AUTHENTICATION_PACKET = Buffer.from([4]);
+        state = STATE_WAIT_SERVER_KEY$1;
+        return REQUEST_SERVER_KEY_PACKET$1;
 
-	const STATE_INITIAL = 0;
-	const STATE_TOKEN_SENT = 1;
-	const STATE_WAIT_SERVER_KEY = 2;
-	const STATE_FINAL = -1;
+      case STATE_WAIT_SERVER_KEY$1:
+        if (pluginOptions.onServerPublicKey) {
+          pluginOptions.onServerPublicKey(data);
+        }
+        return authWithKey(data);
+      case STATE_FINAL$1:
+        throw new Error(
+          `Unexpected data in AuthMoreData packet received by ${PLUGIN_NAME$1} plugin in STATE_FINAL state.`
+        );
+    }
 
-	function sha256(msg) {
-	  const hash = crypto.createHash('sha256');
-	  hash.update(msg);
-	  return hash.digest();
-	}
+    throw new Error(
+      `Unexpected data in AuthMoreData packet received by ${PLUGIN_NAME$1} plugin in state ${state}`
+    );
+  };
+};
 
-	function calculateToken(password, scramble) {
-	  if (!password) {
-	    return Buffer.alloc(0);
-	  }
-	  const stage1 = sha256(Buffer.from(password));
-	  const stage2 = sha256(stage1);
-	  const stage3 = sha256(Buffer.concat([stage2, scramble]));
-	  return xor(stage1, stage3);
-	}
+// https://mysqlserverteam.com/mysql-8-0-4-new-default-authentication-plugin-caching_sha2_password/
 
-	function encrypt(password, scramble, key) {
-	  const stage1 = xorRotating(
-	    Buffer.from(`${password}\0`, 'utf8'),
-	    scramble
-	  );
-	  return crypto.publicEncrypt({
-	    key,
-	    padding: crypto.constants.RSA_PKCS1_OAEP_PADDING
-	  }, stage1);
-	}
+const PLUGIN_NAME = 'caching_sha2_password';
+const crypto = require$$0$3;
+const { xor, xorRotating } = auth_41;
 
-	caching_sha2_password = (pluginOptions = {}) => ({ connection }) => {
-	  let state = 0;
-	  let scramble = null;
+const REQUEST_SERVER_KEY_PACKET = Buffer.from([2]);
+const FAST_AUTH_SUCCESS_PACKET = Buffer.from([3]);
+const PERFORM_FULL_AUTHENTICATION_PACKET = Buffer.from([4]);
 
-	  const password = connection.config.password;
+const STATE_INITIAL = 0;
+const STATE_TOKEN_SENT = 1;
+const STATE_WAIT_SERVER_KEY = 2;
+const STATE_FINAL = -1;
 
-	  const authWithKey = serverKey => {
-	    const _password = encrypt(password, scramble, serverKey);
-	    state = STATE_FINAL;
-	    return _password;
-	  };
-
-	  return data => {
-	    switch (state) {
-	      case STATE_INITIAL:
-	        scramble = data.slice(0, 20);
-	        state = STATE_TOKEN_SENT;
-	        return calculateToken(password, scramble);
-
-	      case STATE_TOKEN_SENT:
-	        if (FAST_AUTH_SUCCESS_PACKET.equals(data)) {
-	          state = STATE_FINAL;
-	          return null;
-	        }
-
-	        if (PERFORM_FULL_AUTHENTICATION_PACKET.equals(data)) {
-	          const isSecureConnection =
-	            typeof pluginOptions.overrideIsSecure === 'undefined'
-	              ? connection.config.ssl || connection.config.socketPath
-	              : pluginOptions.overrideIsSecure;
-	          if (isSecureConnection) {
-	            state = STATE_FINAL;
-	            return Buffer.from(`${password}\0`, 'utf8');
-	          }
-
-	          // if client provides key we can save one extra roundrip on first connection
-	          if (pluginOptions.serverPublicKey) {
-	            return authWithKey(pluginOptions.serverPublicKey);
-	          }
-
-	          state = STATE_WAIT_SERVER_KEY;
-	          return REQUEST_SERVER_KEY_PACKET;
-	        }
-	        throw new Error(
-	          `Invalid AuthMoreData packet received by ${PLUGIN_NAME} plugin in STATE_TOKEN_SENT state.`
-	        );
-	      case STATE_WAIT_SERVER_KEY:
-	        if (pluginOptions.onServerPublicKey) {
-	          pluginOptions.onServerPublicKey(data);
-	        }
-	        return authWithKey(data);
-	      case STATE_FINAL:
-	        throw new Error(
-	          `Unexpected data in AuthMoreData packet received by ${PLUGIN_NAME} plugin in STATE_FINAL state.`
-	        );
-	    }
-
-	    throw new Error(
-	      `Unexpected data in AuthMoreData packet received by ${PLUGIN_NAME} plugin in state ${state}`
-	    );
-	  };
-	};
-	return caching_sha2_password;
+function sha256(msg) {
+  const hash = crypto.createHash('sha256');
+  hash.update(msg);
+  return hash.digest();
 }
 
-var mysql_native_password;
-var hasRequiredMysql_native_password;
-
-function requireMysql_native_password () {
-	if (hasRequiredMysql_native_password) return mysql_native_password;
-	hasRequiredMysql_native_password = 1;
-
-	//const PLUGIN_NAME = 'mysql_native_password';
-	const auth41 = requireAuth_41();
-
-	mysql_native_password = pluginOptions => ({ connection, command }) => {
-	  const password =
-	    command.password || pluginOptions.password || connection.config.password;
-	  const passwordSha1 =
-	    command.passwordSha1 ||
-	    pluginOptions.passwordSha1 ||
-	    connection.config.passwordSha1;
-	  return data => {
-	    const authPluginData1 = data.slice(0, 8);
-	    const authPluginData2 = data.slice(8, 20);
-	    let authToken;
-	    if (passwordSha1) {
-	      authToken = auth41.calculateTokenFromPasswordSha(
-	        passwordSha1,
-	        authPluginData1,
-	        authPluginData2
-	      );
-	    } else {
-	      authToken = auth41.calculateToken(
-	        password,
-	        authPluginData1,
-	        authPluginData2
-	      );
-	    }
-	    return authToken;
-	  };
-	};
-	return mysql_native_password;
+function calculateToken(password, scramble) {
+  if (!password) {
+    return Buffer.alloc(0);
+  }
+  const stage1 = sha256(Buffer.from(password));
+  const stage2 = sha256(stage1);
+  const stage3 = sha256(Buffer.concat([stage2, scramble]));
+  return xor(stage1, stage3);
 }
 
-var mysql_clear_password;
-var hasRequiredMysql_clear_password;
-
-function requireMysql_clear_password () {
-	if (hasRequiredMysql_clear_password) return mysql_clear_password;
-	hasRequiredMysql_clear_password = 1;
-
-	function bufferFromStr(str) {
-	  return Buffer.from(`${str}\0`);
-	}
-
-	const create_mysql_clear_password_plugin = pluginOptions =>
-	  function mysql_clear_password_plugin({ connection, command }) {
-	    const password =
-	      command.password || pluginOptions.password || connection.config.password;
-
-	    return function (/* pluginData */) {
-	      return bufferFromStr(password);
-	    };
-	  };
-
-	mysql_clear_password = create_mysql_clear_password_plugin;
-	return mysql_clear_password;
+function encrypt(password, scramble, key) {
+  const stage1 = xorRotating(
+    Buffer.from(`${password}\0`, 'utf8'),
+    scramble
+  );
+  return crypto.publicEncrypt({
+    key,
+    padding: crypto.constants.RSA_PKCS1_OAEP_PADDING
+  }, stage1);
 }
+
+var caching_sha2_password = (pluginOptions = {}) => ({ connection }) => {
+  let state = 0;
+  let scramble = null;
+
+  const password = connection.config.password;
+
+  const authWithKey = serverKey => {
+    const _password = encrypt(password, scramble, serverKey);
+    state = STATE_FINAL;
+    return _password;
+  };
+
+  return data => {
+    switch (state) {
+      case STATE_INITIAL:
+        scramble = data.slice(0, 20);
+        state = STATE_TOKEN_SENT;
+        return calculateToken(password, scramble);
+
+      case STATE_TOKEN_SENT:
+        if (FAST_AUTH_SUCCESS_PACKET.equals(data)) {
+          state = STATE_FINAL;
+          return null;
+        }
+
+        if (PERFORM_FULL_AUTHENTICATION_PACKET.equals(data)) {
+          const isSecureConnection =
+            typeof pluginOptions.overrideIsSecure === 'undefined'
+              ? connection.config.ssl || connection.config.socketPath
+              : pluginOptions.overrideIsSecure;
+          if (isSecureConnection) {
+            state = STATE_FINAL;
+            return Buffer.from(`${password}\0`, 'utf8');
+          }
+
+          // if client provides key we can save one extra roundrip on first connection
+          if (pluginOptions.serverPublicKey) {
+            return authWithKey(pluginOptions.serverPublicKey);
+          }
+
+          state = STATE_WAIT_SERVER_KEY;
+          return REQUEST_SERVER_KEY_PACKET;
+        }
+        throw new Error(
+          `Invalid AuthMoreData packet received by ${PLUGIN_NAME} plugin in STATE_TOKEN_SENT state.`
+        );
+      case STATE_WAIT_SERVER_KEY:
+        if (pluginOptions.onServerPublicKey) {
+          pluginOptions.onServerPublicKey(data);
+        }
+        return authWithKey(data);
+      case STATE_FINAL:
+        throw new Error(
+          `Unexpected data in AuthMoreData packet received by ${PLUGIN_NAME} plugin in STATE_FINAL state.`
+        );
+    }
+
+    throw new Error(
+      `Unexpected data in AuthMoreData packet received by ${PLUGIN_NAME} plugin in state ${state}`
+    );
+  };
+};
+
+//const PLUGIN_NAME = 'mysql_native_password';
+const auth41$1 = auth_41;
+
+var mysql_native_password = pluginOptions => ({ connection, command }) => {
+  const password =
+    command.password || pluginOptions.password || connection.config.password;
+  const passwordSha1 =
+    command.passwordSha1 ||
+    pluginOptions.passwordSha1 ||
+    connection.config.passwordSha1;
+  return data => {
+    const authPluginData1 = data.slice(0, 8);
+    const authPluginData2 = data.slice(8, 20);
+    let authToken;
+    if (passwordSha1) {
+      authToken = auth41$1.calculateTokenFromPasswordSha(
+        passwordSha1,
+        authPluginData1,
+        authPluginData2
+      );
+    } else {
+      authToken = auth41$1.calculateToken(
+        password,
+        authPluginData1,
+        authPluginData2
+      );
+    }
+    return authToken;
+  };
+};
+
+function bufferFromStr(str) {
+  return Buffer.from(`${str}\0`);
+}
+
+const create_mysql_clear_password_plugin = pluginOptions =>
+  function mysql_clear_password_plugin({ connection, command }) {
+    const password =
+      command.password || pluginOptions.password || connection.config.password;
+
+    return function (/* pluginData */) {
+      return bufferFromStr(password);
+    };
+  };
+
+var mysql_clear_password = create_mysql_clear_password_plugin;
 
 var auth_switch;
 var hasRequiredAuth_switch;
@@ -7783,16 +7740,16 @@ function requireAuth_switch () {
 	hasRequiredAuth_switch = 1;
 
 	const Packets = packetsExports;
-	const sha256_password = requireSha256_password();
-	const caching_sha2_password = requireCaching_sha2_password();
-	const mysql_native_password = requireMysql_native_password();
-	const mysql_clear_password = requireMysql_clear_password();
+	const sha256_password$1 = sha256_password;
+	const caching_sha2_password$1 = caching_sha2_password;
+	const mysql_native_password$1 = mysql_native_password;
+	const mysql_clear_password$1 = mysql_clear_password;
 
 	const standardAuthPlugins = {
-	  sha256_password: sha256_password({}),
-	  caching_sha2_password: caching_sha2_password({}),
-	  mysql_native_password: mysql_native_password({}),
-	  mysql_clear_password: mysql_clear_password({})
+	  sha256_password: sha256_password$1({}),
+	  caching_sha2_password: caching_sha2_password$1({}),
+	  mysql_native_password: mysql_native_password$1({}),
+	  mysql_clear_password: mysql_clear_password$1({})
 	};
 
 	function warnLegacyAuthSwitch() {
@@ -8029,7 +7986,7 @@ const Command$a = command;
 const Packets$8 = packetsExports;
 const ClientConstants$2 = client;
 const CharsetToEncoding$1 = requireCharset_encodings();
-const auth41 = requireAuth_41();
+const auth41 = auth_41;
 
 function flagNames(flags) {
   const res = [];
@@ -12391,21 +12348,12 @@ function requireServer () {
 	return server;
 }
 
-var auth_plugins;
-var hasRequiredAuth_plugins;
-
-function requireAuth_plugins () {
-	if (hasRequiredAuth_plugins) return auth_plugins;
-	hasRequiredAuth_plugins = 1;
-
-	auth_plugins = {
-	  caching_sha2_password: requireCaching_sha2_password(),
-	  mysql_clear_password: requireMysql_clear_password(),
-	  mysql_native_password: requireMysql_native_password(),
-	  sha256_password: requireSha256_password(),
-	};
-	return auth_plugins;
-}
+var auth_plugins = {
+  caching_sha2_password: caching_sha2_password,
+  mysql_clear_password: mysql_clear_password,
+  mysql_native_password: mysql_native_password,
+  sha256_password: sha256_password,
+};
 
 var hasRequiredMysql2;
 
@@ -12457,7 +12405,7 @@ function requireMysql2 () {
 		};
 
 		exports.PoolConnection = requirePool_connection();
-		exports.authPlugins = requireAuth_plugins();
+		exports.authPlugins = auth_plugins;
 		exports.escape = SqlString.escape;
 		exports.escapeId = SqlString.escapeId;
 		exports.format = SqlString.format;

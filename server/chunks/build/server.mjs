@@ -1,7 +1,7 @@
-import { hasInjectionContext, inject, version, defineComponent, h, computed, unref, ref, provide, shallowReactive, watch, Suspense, nextTick, Fragment, Transition, mergeProps, useSSRContext, resolveComponent, createApp, effectScope, reactive, getCurrentScope, getCurrentInstance, withCtx, createTextVNode, onErrorCaptured, onServerPrefetch, createVNode, resolveDynamicComponent, toRef, shallowRef, isReadonly, isRef, isShallow, isReactive, toRaw } from 'vue';
+import { hasInjectionContext, inject, version, unref, defineComponent, h, computed, ref, provide, shallowReactive, watch, Suspense, nextTick, Fragment, Transition, mergeProps, useSSRContext, resolveComponent, createApp, effectScope, reactive, getCurrentScope, getCurrentInstance, withCtx, createTextVNode, onErrorCaptured, onServerPrefetch, createVNode, resolveDynamicComponent, toRef, shallowRef, isReadonly, isRef, isShallow, isReactive, toRaw } from 'vue';
 import { $ as $fetch, m as defu, p as parseQuery, n as createHooks, i as createError$1, o as hasProtocol, q as joinURL, r as isScriptProtocol, w as withQuery, t as sanitizeStatusCode, v as withTrailingSlash, x as withoutTrailingSlash, y as toRouteMatcher, z as createRouter$1 } from '../runtime.mjs';
 import { b as baseURL } from '../routes/renderer.mjs';
-import { CapoPlugin } from 'unhead';
+import { getActiveHead, CapoPlugin } from 'unhead';
 import { defineHeadPlugin } from '@unhead/shared';
 import { useRoute as useRoute$1, RouterView, createMemoryHistory, createRouter, START_LOCATION } from 'vue-router';
 import { ssrRenderAttrs, ssrRenderAttr, ssrInterpolate, ssrRenderComponent, ssrRenderSuspense, ssrRenderVNode } from 'vue/server-renderer';
@@ -492,10 +492,20 @@ defineHeadPlugin({
     }
   }
 });
+const headSymbol = "usehead";
 const _global = typeof globalThis !== "undefined" ? globalThis : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
 const globalKey$1 = "__unhead_injection_handler__";
 function setHeadInjectionHandler(handler) {
   _global[globalKey$1] = handler;
+}
+function injectHead() {
+  if (globalKey$1 in _global) {
+    return _global[globalKey$1]();
+  }
+  const head = inject(headSymbol);
+  if (!head && "production" !== "production")
+    console.warn("Unhead is missing Vue context, falling back to shared context. This may have unexpected results.");
+  return head || getActiveHead();
 }
 [CapoPlugin({ track: true })];
 const unhead_KgADcZ0jPj = /* @__PURE__ */ defineNuxtPlugin({
@@ -659,12 +669,12 @@ const _routes = [
   {
     name: "article-id",
     path: "/article/:id()",
-    component: () => import('./_id_-0vY2htg4.mjs')
+    component: () => import('./_id_-xvrxnKJS.mjs')
   },
   {
     name: "index",
     path: "/",
-    component: () => import('./index-D3o6NgKG.mjs')
+    component: () => import('./index-4o1bL14W.mjs')
   },
   {
     name: "rikya-components-add_artikel",
@@ -684,7 +694,7 @@ const _routes = [
   {
     name: "rikya-components-Home",
     path: "/rikya/components/Home",
-    component: () => import('./Home-DQMqpDfG.mjs')
+    component: () => import('./Home-CnCox8v6.mjs')
   },
   {
     name: "rikya-components-LiveStream",
@@ -714,7 +724,7 @@ const _routes = [
   {
     name: "watch-id",
     path: "/watch/:id()",
-    component: () => import('./_id_-IpXpQsnf.mjs')
+    component: () => import('./_id_-DojrzGhX.mjs')
   },
   {
     name: "watch-offline_screen",
@@ -1734,5 +1744,5 @@ let entry;
 }
 const entry$1 = (ssrContext) => entry(ssrContext);
 
-export { _imports_0 as _, useRouter as a, __nuxt_component_0 as b, _export_sfc as c, useRoute as d, entry$1 as default, useRuntimeConfig as u };
+export { _imports_0 as _, useRouter as a, __nuxt_component_0 as b, _export_sfc as c, useRoute as d, entry$1 as default, injectHead as i, resolveUnrefHeadInput as r, useRuntimeConfig as u };
 //# sourceMappingURL=server.mjs.map
