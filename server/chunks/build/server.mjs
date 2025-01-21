@@ -669,7 +669,7 @@ const _routes = [
   {
     name: "article-id",
     path: "/article/:id()",
-    component: () => import('./_id_-B5Uvr-D2.mjs')
+    component: () => import('./_id_-xvrxnKJS.mjs')
   },
   {
     name: "index",
@@ -724,7 +724,7 @@ const _routes = [
   {
     name: "watch-id",
     path: "/watch/:id()",
-    component: () => import('./_id_-DojrzGhX.mjs')
+    component: () => import('./_id_-C7UPGjaZ.mjs')
   },
   {
     name: "watch-offline_screen",

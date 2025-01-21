@@ -5,7 +5,6 @@ import { useRoute } from 'vue-router';
 import { F as Footer } from './Footer-3ik4tbsg.mjs';
 import { A as Adsense } from './Adsense-BQOULn5G.mjs';
 import { SunIcon, MoonIcon, MenuIcon, XIcon, ClockIcon } from 'lucide-vue-next';
-import { u as useSeoMeta } from './index-CFzRD-82.mjs';
 import '../runtime.mjs';
 import 'node:http';
 import 'node:https';
@@ -52,17 +51,9 @@ const _sfc_main = {
     computed(() => {
       return streamEvent.value ? `(${streamEvent.value})` : "";
     });
-    const seoTitle = computed(() => streamTitle.value || "Default Stream Title");
-    const seoDescription = computed(() => streamContent.value || "Watch the latest stream with us.");
-    const seoImage = computed(() => streamImage.value || `${IMAGE_URL}/public/img/default.jpg`);
-    useSeoMeta({
-      title: seoTitle,
-      ogTitle: seoTitle,
-      description: seoDescription,
-      ogDescription: seoDescription,
-      ogImage: seoImage,
-      twitterCard: "summary_large_image"
-    });
+    computed(() => streamTitle.value || "RacingStation - Stream");
+    computed(() => streamContent.value || "Watch the live sports with RacingStation Stream.");
+    computed(() => streamImage.value || `${IMAGE_URL}/public/img/default.jpg`);
     return (_ctx, _push, _parent, _attrs) => {
       _push(`<div${ssrRenderAttrs(mergeProps({ class: "app" }, _attrs))}><header><div class="header-content"><h1 class="logo"><img${ssrRenderAttr("src", _imports_0)} alt="RacingStation Logo" class="logo-image"> RacingStation </h1><div class="header-controls"><button class="icon-button">`);
       if (isDarkMode.value) {
@@ -126,4 +117,4 @@ _sfc_main.setup = (props, ctx) => {
 };
 
 export { _sfc_main as default };
-//# sourceMappingURL=_id_-DojrzGhX.mjs.map
+//# sourceMappingURL=_id_-C7UPGjaZ.mjs.map
