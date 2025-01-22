@@ -70,6 +70,9 @@ const _sfc_main = {
       description: seoDescription,
       ogDescription: seoDescription,
       ogImage: seoImage,
+      twitterTitle: seoTitle,
+      twitterDescription: seoDescription,
+      twitterImage: seoImage,
       twitterCard: "summary_large_image"
     });
     computed(() => {
@@ -138,4 +141,4 @@ _sfc_main.setup = (props, ctx) => {
 };
 
 export { _sfc_main as default };
-//# sourceMappingURL=_id_-D4JWdHiZ.mjs.map
+//# sourceMappingURL=_id_-BZarQId0.mjs.map
