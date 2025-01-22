@@ -5,6 +5,7 @@ import { useRoute } from 'vue-router';
 import { F as Footer } from './Footer-3ik4tbsg.mjs';
 import { A as Adsense } from './Adsense-BQOULn5G.mjs';
 import { SunIcon, MoonIcon, MenuIcon, XIcon, ClockIcon } from 'lucide-vue-next';
+import { u as useSeoMeta } from './index-CFzRD-82.mjs';
 import '../runtime.mjs';
 import 'node:http';
 import 'node:https';
@@ -36,7 +37,6 @@ const _sfc_main = {
     const currentView = ref(null);
     const buttons = ref([]);
     const slugStatus = ref("");
-    const { IMAGE_URL } = useRuntimeConfig().public;
     const getLink = (item) => {
       switch (item) {
         case "Latest News":
@@ -47,13 +47,34 @@ const _sfc_main = {
           return "/";
       }
     };
-    useRuntimeConfig().public;
+    const { API_URL, IMAGE_URL } = useRuntimeConfig().public;
+    const getImagePath = (image) => {
+      const baseUrl = IMAGE_URL.startsWith("http") ? IMAGE_URL : `https://${IMAGE_URL}`;
+      if (!image || typeof image !== "string") {
+        return `${baseUrl}/public/img/default.jpg`;
+      }
+      if (image.startsWith("http://") || image.startsWith("https://")) {
+        return image;
+      }
+      if (image.startsWith("/public/img/")) {
+        return `${baseUrl}${image}`;
+      }
+      return `${baseUrl}/public/img/${image}`;
+    };
+    const seoTitle = computed(() => streamTitle.value || "Watch Stream");
+    const seoDescription = computed(() => streamContent.value || "Watch live streaming of your favorite events.");
+    const seoImage = computed(() => getImagePath(streamImage.value));
+    useSeoMeta({
+      title: seoTitle,
+      ogTitle: seoTitle,
+      description: seoDescription,
+      ogDescription: seoDescription,
+      ogImage: seoImage,
+      twitterCard: "summary_large_image"
+    });
     computed(() => {
       return streamEvent.value ? `(${streamEvent.value})` : "";
     });
-    computed(() => streamTitle.value || "RacingStation - Stream");
-    computed(() => streamContent.value || "Watch the live sports with RacingStation Stream.");
-    computed(() => streamImage.value || `${IMAGE_URL}/public/img/default.jpg`);
     return (_ctx, _push, _parent, _attrs) => {
       _push(`<div${ssrRenderAttrs(mergeProps({ class: "app" }, _attrs))}><header><div class="header-content"><h1 class="logo"><img${ssrRenderAttr("src", _imports_0)} alt="RacingStation Logo" class="logo-image"> RacingStation </h1><div class="header-controls"><button class="icon-button">`);
       if (isDarkMode.value) {
@@ -117,4 +138,4 @@ _sfc_main.setup = (props, ctx) => {
 };
 
 export { _sfc_main as default };
-//# sourceMappingURL=_id_-C7UPGjaZ.mjs.map
+//# sourceMappingURL=_id_-D4JWdHiZ.mjs.map
