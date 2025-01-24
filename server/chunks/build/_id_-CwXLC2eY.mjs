@@ -33,7 +33,7 @@ const _sfc_main = {
     const streamEvent = ref("");
     const videoLink = ref("");
     const streamContent = ref("");
-    const streamImage = ref("");
+    ref("");
     const currentView = ref(null);
     const buttons = ref([]);
     const slugStatus = ref("");
@@ -48,31 +48,17 @@ const _sfc_main = {
       }
     };
     const { API_URL, IMAGE_URL } = useRuntimeConfig().public;
-    const getImagePath = (image) => {
-      const baseUrl = IMAGE_URL.startsWith("http") ? IMAGE_URL : `https://${IMAGE_URL}`;
-      if (!image || typeof image !== "string") {
-        return `${baseUrl}/public/img/default.jpg`;
-      }
-      if (image.startsWith("http://") || image.startsWith("https://")) {
-        return image;
-      }
-      if (image.startsWith("/public/img/")) {
-        return `${baseUrl}${image}`;
-      }
-      return `${baseUrl}/public/img/${image}`;
-    };
-    const seoTitle = computed(() => streamTitle.value || "RacingStation Stream");
-    const seoDescription = computed(() => streamContent.value || "Watch live streaming of your favorite events.");
-    const seoImage = computed(() => getImagePath(streamImage.value) || "../../public/img/racingstation-stream.png");
+    computed(() => streamTitle.value || "RacingStation Stream");
+    computed(() => streamContent.value || "Watch live streaming of your favorite events.");
+    const seoImage = computed(() => `${IMAGE_URL.startsWith("http") ? IMAGE_URL : `https://${IMAGE_URL}`}/public/img/racingstation-stream.png`);
     useSeoMeta({
-      title: seoTitle,
-      ogTitle: seoTitle,
-      description: seoDescription,
-      ogDescription: seoDescription,
+      title: "RacingStation Stream",
+      ogTitle: "RacingStation Stream",
+      description: "Watch live streaming of your favorite events.",
+      ogDescription: "Watch live streaming of your favorite events.",
       ogImage: seoImage,
-      twitterTitle: seoTitle,
-      twitterDescription: seoDescription,
-      twitterImage: seoImage,
+      twitterTitle: "RacingStation Stream",
+      twitterDescription: "Watch live streaming of your favorite events.",
       twitterCard: "summary_large_image"
     });
     computed(() => {
@@ -141,4 +127,4 @@ _sfc_main.setup = (props, ctx) => {
 };
 
 export { _sfc_main as default };
-//# sourceMappingURL=_id_-C9uM-7Gf.mjs.map
+//# sourceMappingURL=_id_-CwXLC2eY.mjs.map
