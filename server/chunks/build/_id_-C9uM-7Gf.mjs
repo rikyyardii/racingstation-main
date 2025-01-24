@@ -61,9 +61,9 @@ const _sfc_main = {
       }
       return `${baseUrl}/public/img/${image}`;
     };
-    const seoTitle = computed(() => streamTitle.value || "Watch Stream");
+    const seoTitle = computed(() => streamTitle.value || "RacingStation Stream");
     const seoDescription = computed(() => streamContent.value || "Watch live streaming of your favorite events.");
-    const seoImage = computed(() => getImagePath(streamImage.value));
+    const seoImage = computed(() => getImagePath(streamImage.value) || "../../public/img/racingstation-stream.png");
     useSeoMeta({
       title: seoTitle,
       ogTitle: seoTitle,
@@ -141,4 +141,4 @@ _sfc_main.setup = (props, ctx) => {
 };
 
 export { _sfc_main as default };
-//# sourceMappingURL=_id_-BZarQId0.mjs.map
+//# sourceMappingURL=_id_-C9uM-7Gf.mjs.map

@@ -5603,109 +5603,102 @@ var auth_41 = {};
 
 const require$$0$3 = /*@__PURE__*/getDefaultExportFromNamespaceIfNotNamed(require$$1$3);
 
-var hasRequiredAuth_41;
+(function (exports) {
 
-function requireAuth_41 () {
-	if (hasRequiredAuth_41) return auth_41;
-	hasRequiredAuth_41 = 1;
-	(function (exports) {
+	/*
+	4.1 authentication: (http://bazaar.launchpad.net/~mysql/mysql-server/5.5/view/head:/sql/password.c)
 
-		/*
-		4.1 authentication: (http://bazaar.launchpad.net/~mysql/mysql-server/5.5/view/head:/sql/password.c)
+	  SERVER:  public_seed=create_random_string()
+	           send(public_seed)
 
-		  SERVER:  public_seed=create_random_string()
-		           send(public_seed)
+	  CLIENT:  recv(public_seed)
+	           hash_stage1=sha1("password")
+	           hash_stage2=sha1(hash_stage1)
+	           reply=xor(hash_stage1, sha1(public_seed,hash_stage2)
 
-		  CLIENT:  recv(public_seed)
-		           hash_stage1=sha1("password")
-		           hash_stage2=sha1(hash_stage1)
-		           reply=xor(hash_stage1, sha1(public_seed,hash_stage2)
+	           // this three steps are done in scramble()
 
-		           // this three steps are done in scramble()
-
-		           send(reply)
+	           send(reply)
 
 
-		  SERVER:  recv(reply)
-		           hash_stage1=xor(reply, sha1(public_seed,hash_stage2))
-		           candidate_hash2=sha1(hash_stage1)
-		           check(candidate_hash2==hash_stage2)
+	  SERVER:  recv(reply)
+	           hash_stage1=xor(reply, sha1(public_seed,hash_stage2))
+	           candidate_hash2=sha1(hash_stage1)
+	           check(candidate_hash2==hash_stage2)
 
-		server stores sha1(sha1(password)) ( hash_stag2)
-		*/
+	server stores sha1(sha1(password)) ( hash_stag2)
+	*/
 
-		const crypto = require$$0$3;
+	const crypto = require$$0$3;
 
-		function sha1(msg, msg1, msg2) {
-		  const hash = crypto.createHash('sha1');
-		  hash.update(msg);
-		  if (msg1) {
-		    hash.update(msg1);
-		  }
+	function sha1(msg, msg1, msg2) {
+	  const hash = crypto.createHash('sha1');
+	  hash.update(msg);
+	  if (msg1) {
+	    hash.update(msg1);
+	  }
 
-		  if (msg2) {
-		    hash.update(msg2);
-		  }
+	  if (msg2) {
+	    hash.update(msg2);
+	  }
 
-		  return hash.digest();
-		}
+	  return hash.digest();
+	}
 
-		function xor(a, b) {
-		  const result = Buffer.allocUnsafe(a.length);
-		  for (let i = 0; i < a.length; i++) {
-		    result[i] = a[i] ^ b[i];
-		  }
-		  return result;
-		}
+	function xor(a, b) {
+	  const result = Buffer.allocUnsafe(a.length);
+	  for (let i = 0; i < a.length; i++) {
+	    result[i] = a[i] ^ b[i];
+	  }
+	  return result;
+	}
 
-		exports.xor = xor;
+	exports.xor = xor;
 
-		function token(password, scramble1, scramble2) {
-		  if (!password) {
-		    return Buffer.alloc(0);
-		  }
-		  const stage1 = sha1(password);
-		  return exports.calculateTokenFromPasswordSha(stage1, scramble1, scramble2);
-		}
+	function token(password, scramble1, scramble2) {
+	  if (!password) {
+	    return Buffer.alloc(0);
+	  }
+	  const stage1 = sha1(password);
+	  return exports.calculateTokenFromPasswordSha(stage1, scramble1, scramble2);
+	}
 
-		exports.calculateTokenFromPasswordSha = function(
-		  passwordSha,
-		  scramble1,
-		  scramble2
-		) {
-		  // we use AUTH 41 here, and we need only the bytes we just need.
-		  const authPluginData1 = scramble1.slice(0, 8);
-		  const authPluginData2 = scramble2.slice(0, 12);
-		  const stage2 = sha1(passwordSha);
-		  const stage3 = sha1(authPluginData1, authPluginData2, stage2);
-		  return xor(stage3, passwordSha);
-		};
+	exports.calculateTokenFromPasswordSha = function(
+	  passwordSha,
+	  scramble1,
+	  scramble2
+	) {
+	  // we use AUTH 41 here, and we need only the bytes we just need.
+	  const authPluginData1 = scramble1.slice(0, 8);
+	  const authPluginData2 = scramble2.slice(0, 12);
+	  const stage2 = sha1(passwordSha);
+	  const stage3 = sha1(authPluginData1, authPluginData2, stage2);
+	  return xor(stage3, passwordSha);
+	};
 
-		exports.calculateToken = token;
+	exports.calculateToken = token;
 
-		exports.verifyToken = function(publicSeed1, publicSeed2, token, doubleSha) {
-		  const hashStage1 = xor(token, sha1(publicSeed1, publicSeed2, doubleSha));
-		  const candidateHash2 = sha1(hashStage1);
-		  return candidateHash2.compare(doubleSha) === 0;
-		};
+	exports.verifyToken = function(publicSeed1, publicSeed2, token, doubleSha) {
+	  const hashStage1 = xor(token, sha1(publicSeed1, publicSeed2, doubleSha));
+	  const candidateHash2 = sha1(hashStage1);
+	  return candidateHash2.compare(doubleSha) === 0;
+	};
 
-		exports.doubleSha1 = function(password) {
-		  return sha1(sha1(password));
-		};
+	exports.doubleSha1 = function(password) {
+	  return sha1(sha1(password));
+	};
 
-		function xorRotating(a, seed) {
-		  const result = Buffer.allocUnsafe(a.length);
-		  const seedLen = seed.length;
+	function xorRotating(a, seed) {
+	  const result = Buffer.allocUnsafe(a.length);
+	  const seedLen = seed.length;
 
-		  for (let i = 0; i < a.length; i++) {
-		    result[i] = a[i] ^ seed[i % seedLen];
-		  }
-		  return result;
-		}
-		exports.xorRotating = xorRotating; 
-	} (auth_41));
-	return auth_41;
-}
+	  for (let i = 0; i < a.length; i++) {
+	    result[i] = a[i] ^ seed[i % seedLen];
+	  }
+	  return result;
+	}
+	exports.xorRotating = xorRotating; 
+} (auth_41));
 
 var charset_encodings;
 var hasRequiredCharset_encodings;
@@ -6034,7 +6027,7 @@ function requireCharset_encodings () {
 const CommandCode$4 = commands$1;
 const ClientConstants$7 = client;
 const Packet$d = packet;
-const auth41$2 = requireAuth_41();
+const auth41$2 = auth_41;
 const CharsetToEncoding$7 = requireCharset_encodings();
 
 // https://dev.mysql.com/doc/internals/en/com-change-user.html#packet-COM_CHANGE_USER
@@ -6781,7 +6774,7 @@ const ClientConstants$5 = client;
 const CharsetToEncoding$4 = requireCharset_encodings();
 const Packet$8 = packet;
 
-const auth41$1 = requireAuth_41();
+const auth41$1 = auth_41;
 
 class HandshakeResponse {
   constructor(handshake) {
@@ -7537,7 +7530,7 @@ function requireSha256_password () {
 
 	const PLUGIN_NAME = 'sha256_password';
 	const crypto = require$$0$3;
-	const { xorRotating } = requireAuth_41();
+	const { xorRotating } = auth_41;
 
 	const REQUEST_SERVER_KEY_PACKET = Buffer.from([1]);
 
@@ -7607,7 +7600,7 @@ function requireCaching_sha2_password () {
 
 	const PLUGIN_NAME = 'caching_sha2_password';
 	const crypto = require$$0$3;
-	const { xor, xorRotating } = requireAuth_41();
+	const { xor, xorRotating } = auth_41;
 
 	const REQUEST_SERVER_KEY_PACKET = Buffer.from([2]);
 	const FAST_AUTH_SUCCESS_PACKET = Buffer.from([3]);
@@ -7718,7 +7711,7 @@ function requireMysql_native_password () {
 	hasRequiredMysql_native_password = 1;
 
 	//const PLUGIN_NAME = 'mysql_native_password';
-	const auth41 = requireAuth_41();
+	const auth41 = auth_41;
 
 	mysql_native_password = pluginOptions => ({ connection, command }) => {
 	  const password =
@@ -8029,7 +8022,7 @@ const Command$a = command;
 const Packets$8 = packetsExports;
 const ClientConstants$2 = client;
 const CharsetToEncoding$1 = requireCharset_encodings();
-const auth41 = requireAuth_41();
+const auth41 = auth_41;
 
 function flagNames(flags) {
   const res = [];
