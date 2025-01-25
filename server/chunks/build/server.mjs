@@ -709,7 +709,7 @@ const _routes = [
   {
     name: "rikya-edit_stream-id",
     path: "/rikya/edit_stream/:id()",
-    component: () => import('./_id_-Oqe8Ngwi.mjs')
+    component: () => import('./_id_-BF0dkGoc.mjs')
   },
   {
     name: "rikya",
@@ -724,7 +724,7 @@ const _routes = [
   {
     name: "watch-id",
     path: "/watch/:id()",
-    component: () => import('./_id_-CwXLC2eY.mjs')
+    component: () => import('./_id_-DGw9stu9.mjs')
   },
   {
     name: "watch-offline_screen",
