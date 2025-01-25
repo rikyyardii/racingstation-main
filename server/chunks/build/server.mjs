@@ -669,12 +669,12 @@ const _routes = [
   {
     name: "article-id",
     path: "/article/:id()",
-    component: () => import('./_id_-xvrxnKJS.mjs')
+    component: () => import('./_id_-g4jppGDL.mjs')
   },
   {
     name: "index",
     path: "/",
-    component: () => import('./index-4o1bL14W.mjs')
+    component: () => import('./index-CLtul5Vs.mjs')
   },
   {
     name: "rikya-components-add_artikel",
@@ -719,12 +719,12 @@ const _routes = [
   {
     name: "stream",
     path: "/stream",
-    component: () => import('./stream-4Y0GMW-j.mjs')
+    component: () => import('./stream-BmFo4-TN.mjs')
   },
   {
     name: "watch-id",
     path: "/watch/:id()",
-    component: () => import('./_id_-DGw9stu9.mjs')
+    component: () => import('./_id_-DgBrDvJw.mjs')
   },
   {
     name: "watch-offline_screen",
