@@ -404,21 +404,21 @@ app.put("/api/streams/:slug", async (req, res) => {
       updates.push("excerpt = ?");
       values.push(excerpt);
     }
-    if (link) {
+    if (link !== undefined) {
       updates.push("link = ?");
-      values.push(link);
+      values.push(link || ""); // Tetap simpan sebagai string kosong jika tidak ada nilai
     }
-    if (link2) {
+    if (link2 !== undefined) {
       updates.push("link2 = ?");
-      values.push(link2);
+      values.push(link2 || "");
     }
-    if (link3) {
+    if (link3 !== undefined) {
       updates.push("link3 = ?");
-      values.push(link3);
+      values.push(link3 || "");
     }
-    if (link4) {
+    if (link4 !== undefined) {
       updates.push("link4 = ?");
-      values.push(link4);
+      values.push(link4 || "");
     }
     if (content) {
       updates.push("content = ?");

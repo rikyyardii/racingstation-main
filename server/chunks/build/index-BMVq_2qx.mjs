@@ -55,15 +55,15 @@ const _sfc_main = {
       // Judul dinamis untuk tab browser
       ogTitle: seoTitle,
       // Judul statis untuk share link
-      description: "Catch up on the latest sports news and enjoy live sports streaming, including Formula 1, MotoGP, WEC, Football, and more. RacingStation offers a mobile-friendly experience and stable streaming services.",
+      description: "  ",
       // Deskripsi dinamis
-      ogDescription: "Stay updated with sports news and stream live events like F1, MotoGP, WEC, Football, and more. Enjoy a smooth, mobile-friendly streaming experience on RacingStation.",
+      ogDescription: "Stay updated with the latest sports news and enjoy live streaming of sports events, including Formula 1, MotoGP, WEC, Football, and more. Experience a mobile-friendly platform and reliable streaming services with RacingStation.",
       // Deskripsi statis untuk share link
       ogImage: seoImage,
       // Gambar untuk share link
       twitterTitle: seoTitle,
       // Judul statis untuk Twitter card
-      twitterDescription: "Catch up on the latest sports news and enjoy live sports streaming, including Formula 1, MotoGP, WEC, Football, and more. RacingStation offers a mobile-friendly experience and stable streaming services.",
+      twitterDescription: "Stay updated with the latest sports news and enjoy live streaming of sports events, including Formula 1, MotoGP, WEC, Football, and more. Experience a mobile-friendly platform and reliable streaming services with RacingStation.",
       // Deskripsi statis untuk Twitter card
       twitterCard: "summary_large_image"
       // Format card Twitter
@@ -208,4 +208,4 @@ _sfc_main.setup = (props, ctx) => {
 };
 
 export { _sfc_main as default };
-//# sourceMappingURL=index-CLtul5Vs.mjs.map
+//# sourceMappingURL=index-BMVq_2qx.mjs.map
