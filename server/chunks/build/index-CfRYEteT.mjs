@@ -55,7 +55,7 @@ const _sfc_main = {
       // Judul dinamis untuk tab browser
       ogTitle: seoTitle,
       // Judul statis untuk share link
-      description: "  ",
+      description: "Stay updated with the latest sports news and enjoy live streaming of sports events, including Formula 1, MotoGP, WEC, Football, and more. Experience a mobile-friendly platform and reliable streaming services with RacingStation.",
       // Deskripsi dinamis
       ogDescription: "Stay updated with the latest sports news and enjoy live streaming of sports events, including Formula 1, MotoGP, WEC, Football, and more. Experience a mobile-friendly platform and reliable streaming services with RacingStation.",
       // Deskripsi statis untuk share link
@@ -208,4 +208,4 @@ _sfc_main.setup = (props, ctx) => {
 };
 
 export { _sfc_main as default };
-//# sourceMappingURL=index-BMVq_2qx.mjs.map
+//# sourceMappingURL=index-CfRYEteT.mjs.map
