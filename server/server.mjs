@@ -8,6 +8,7 @@ import { fileURLToPath } from "url";
 import fs from "fs";
 import slugify from "slugify";
 import { createClient } from "redis";
+import { DateTime } from "luxon";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -461,16 +462,22 @@ app.route("/api/articles/:slug").get(async (req, res) => {
   }
 });
 
+// Edit Artikel
 app.route("/api/articles/:id").put(async (req, res) => {
   const { id } = req.params;
   const { category, title, excerpt, date, author, readingTime, content } = req.body;
+
+  // Konversi tanggal UTC dari client ke Asia/Jakarta, lalu ambil tanggalnya
+  const formattedDate = DateTime.fromISO(date)
+    .setZone("Asia/Jakarta") // Konversi UTC ke WIB
+    .toFormat("yyyy-MM-dd");
 
   const query = `
     UPDATE articles
     SET category = ?, title = ?, excerpt = ?, date = ?, author = ?, reading_time = ?, content = ?
     WHERE id = ?
   `;
-  const values = [category, title, excerpt, date, author, readingTime, content, id];
+  const values = [category, title, excerpt, formattedDate, author, readingTime, content, id];
 
   try {
     const [result] = await db.execute(query, values);

@@ -1,5 +1,5 @@
 import { hasInjectionContext, inject, version, unref, defineComponent, h, computed, ref, provide, shallowReactive, watch, Suspense, nextTick, Fragment, Transition, mergeProps, useSSRContext, resolveComponent, createApp, effectScope, reactive, getCurrentScope, getCurrentInstance, withCtx, createTextVNode, onErrorCaptured, onServerPrefetch, createVNode, resolveDynamicComponent, toRef, shallowRef, isReadonly, isRef, isShallow, isReactive, toRaw } from 'vue';
-import { $ as $fetch, m as defu, p as parseQuery, n as createHooks, i as createError$1, o as hasProtocol, q as joinURL, r as isScriptProtocol, w as withQuery, t as sanitizeStatusCode, v as withTrailingSlash, x as withoutTrailingSlash, y as toRouteMatcher, z as createRouter$1 } from '../runtime.mjs';
+import { $ as $fetch, l as defu, p as parseQuery, m as createHooks, h as createError$1, n as hasProtocol, o as joinURL, q as isScriptProtocol, w as withQuery, r as sanitizeStatusCode, t as withTrailingSlash, v as withoutTrailingSlash, x as toRouteMatcher, y as createRouter$1 } from '../runtime.mjs';
 import { b as baseURL } from '../routes/renderer.mjs';
 import { getActiveHead, CapoPlugin } from 'unhead';
 import { defineHeadPlugin } from '@unhead/shared';
@@ -667,49 +667,74 @@ async function getRouteRules(url) {
 }
 const _routes = [
   {
+    name: "about-contact-page",
+    path: "/about/contact-page",
+    component: () => import('./contact-page-ypCrgleK.mjs')
+  },
+  {
+    name: "about-disclaimer",
+    path: "/about/disclaimer",
+    component: () => import('./disclaimer-Mw8H2OQ1.mjs')
+  },
+  {
+    name: "about-privacy-policy",
+    path: "/about/privacy-policy",
+    component: () => import('./privacy-policy-pcKGPa1w.mjs')
+  },
+  {
+    name: "about-racingstation",
+    path: "/about/racingstation",
+    component: () => import('./racingstation-Bv-lZUyz.mjs')
+  },
+  {
+    name: "about-tos",
+    path: "/about/tos",
+    component: () => import('./tos-Ber7UBZf.mjs')
+  },
+  {
     name: "article-id",
     path: "/article/:id()",
-    component: () => import('./_id_-g4jppGDL.mjs')
+    component: () => import('./_id_-BvB5ZXiA.mjs')
   },
   {
     name: "index",
     path: "/",
-    component: () => import('./index-CfRYEteT.mjs')
+    component: () => import('./index-CJNprIOn.mjs')
   },
   {
     name: "rikya-components-add_artikel",
     path: "/rikya/components/add_artikel",
-    component: () => import('./add_artikel-D1ogIb7R.mjs')
+    component: () => import('./add_artikel-yt1tuUwp.mjs')
   },
   {
     name: "rikya-components-add_livestream",
     path: "/rikya/components/add_livestream",
-    component: () => import('./add_livestream-BxhE_271.mjs')
+    component: () => import('./add_livestream-C1gOs1Us.mjs')
   },
   {
     name: "rikya-components-Artikel",
     path: "/rikya/components/Artikel",
-    component: () => import('./Artikel-DTnjxHHM.mjs')
+    component: () => import('./Artikel-Bd51WSHh.mjs')
   },
   {
     name: "rikya-components-Home",
     path: "/rikya/components/Home",
-    component: () => import('./Home-CnCox8v6.mjs')
+    component: () => import('./Home-B2VGRQE6.mjs')
   },
   {
     name: "rikya-components-LiveStream",
     path: "/rikya/components/LiveStream",
-    component: () => import('./LiveStream-ezrx8RAG.mjs')
+    component: () => import('./LiveStream-EYE9AJF5.mjs')
   },
   {
     name: "rikya-edit_artikel-id",
     path: "/rikya/edit_artikel/:id()",
-    component: () => import('./_id_-XOOZyBQt.mjs')
+    component: () => import('./_id_-BIJNJHUw.mjs')
   },
   {
     name: "rikya-edit_stream-id",
     path: "/rikya/edit_stream/:id()",
-    component: () => import('./_id_-bC7SfXQF.mjs')
+    component: () => import('./_id_-DeOBOav9.mjs')
   },
   {
     name: "rikya",
@@ -719,12 +744,12 @@ const _routes = [
   {
     name: "stream",
     path: "/stream",
-    component: () => import('./stream-BmFo4-TN.mjs')
+    component: () => import('./stream-D6s5Efb1.mjs')
   },
   {
     name: "watch-id",
     path: "/watch/:id()",
-    component: () => import('./_id_-DgBrDvJw.mjs')
+    component: () => import('./_id_-fOmByv6p.mjs')
   },
   {
     name: "watch-offline_screen",
@@ -1744,5 +1769,5 @@ let entry;
 }
 const entry$1 = (ssrContext) => entry(ssrContext);
 
-export { _imports_0 as _, useRouter as a, __nuxt_component_0 as b, _export_sfc as c, useRoute as d, entry$1 as default, injectHead as i, resolveUnrefHeadInput as r, useRuntimeConfig as u };
+export { _imports_0 as _, __nuxt_component_0 as a, useRouter as b, _export_sfc as c, useRoute as d, entry$1 as default, injectHead as i, resolveUnrefHeadInput as r, useRuntimeConfig as u };
 //# sourceMappingURL=server.mjs.map
