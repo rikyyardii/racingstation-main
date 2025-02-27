@@ -20,6 +20,7 @@
     "@vue/runtime-dom": "3.5.12",
     "@vue/server-renderer": "3.5.12",
     "@vue/shared": "3.5.12",
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "devalue": "5.1.1",
     "entities": "4.5.0",

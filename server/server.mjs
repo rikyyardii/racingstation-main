@@ -9,6 +9,7 @@ import fs from "fs";
 import slugify from "slugify";
 import { createClient } from "redis";
 import { DateTime } from "luxon";
+import bcrypt from "bcrypt";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -103,12 +104,19 @@ async function cacheMiddleware(req, res, next) {
 // Login route
 app.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
-  const query = "SELECT * FROM users WHERE username = ? AND password = ?";
+  const query = "SELECT * FROM users WHERE username = ?";
 
   try {
-    const [results] = await db.execute(query, [username, password]);
+    const [results] = await db.execute(query, [username]);
 
-    if (results.length > 0) {
+    if (results.length === 0) {
+      return res.send({ success: false, message: "Username atau password salah" });
+    }
+
+    const user = results[0];
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    if (passwordMatch) {
       req.session.isAuthenticated = true;
       req.session.username = username;
       res.send({ success: true, message: "Login berhasil" });
@@ -116,7 +124,8 @@ app.post("/api/login", async (req, res) => {
       res.send({ success: false, message: "Username atau password salah" });
     }
   } catch (err) {
-    res.status(500).send({ error: "Database query failed" });
+    console.error("Login error:", err);
+    res.status(500).send({ error: "Internal server error" });
   }
 });
 
@@ -260,7 +269,7 @@ const generateUniqueStreamSlug = async (title) => {
 
 // Endpoint menyimpan stream
 app.post("/api/streams", async (req, res) => {
-  const { title, event, excerpt, link, link2, link3, link4, content, imagePath } = req.body;
+  const { title, category, event, excerpt, link, link2, link3, link4, content, imagePath } = req.body;
 
   try {
     // Buat slug unik berdasarkan judul
@@ -287,10 +296,10 @@ app.post("/api/streams", async (req, res) => {
 
     // Query untuk menyimpan stream
     const query = `
-      INSERT INTO streams (slug, title, event, excerpt, link, link2, link3, link4, content, image_path, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO streams (slug, title, category, event, excerpt, link, link2, link3, link4, content, image_path, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
-    const values = [slug, title, event, excerpt, link, link2, link3, link4, content, imagePath, formattedCreatedAt];
+    const values = [slug, title, category, event, excerpt, link, link2, link3, link4, content, imagePath, formattedCreatedAt];
 
     await db.execute(query, values);
     res.status(201).send({ message: "Stream created successfully", slug });
@@ -372,7 +381,7 @@ app.get("/api/streams/:slug", async (req, res) => {
 // Edit Stream
 app.put("/api/streams/:slug", async (req, res) => {
   const { slug } = req.params;
-  const { title, event, excerpt, link, link2, link3, link4, content, status } = req.body;
+  const { title, category, event, excerpt, link, link2, link3, link4, content, status } = req.body;
 
   // cek slug valid
   if (!slug) {
@@ -380,7 +389,7 @@ app.put("/api/streams/:slug", async (req, res) => {
   }
 
   // cek inputan form
-  if (!title && !excerpt && !link && !link2 && !link3 && !link4 && !content && !status) {
+  if (!title && !category && !event && !excerpt && !link && !link2 && !link3 && !link4 && !content && !status) {
     return res.status(400).json({ error: "Tidak ada data yang dikirim untuk pembaruan" });
   }
 
@@ -397,7 +406,11 @@ app.put("/api/streams/:slug", async (req, res) => {
       updates.push("title = ?");
       values.push(title);
     }
-    if (title) {
+    if (category) {
+      updates.push("category = ?");
+      values.push(category);
+    }
+    if (event) {
       updates.push("event = ?");
       values.push(event);
     }

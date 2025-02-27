@@ -1,6 +1,0 @@
-import { _ as _id__vue_vue_type_style_index_0_scoped_4da6c31d_lang } from './_id_-styles-1.mjs-DxgYO98K.mjs';
-
-const _id_Styles_D9a2kOBo = [_id__vue_vue_type_style_index_0_scoped_4da6c31d_lang, _id__vue_vue_type_style_index_0_scoped_4da6c31d_lang];
-
-export { _id_Styles_D9a2kOBo as default };
-//# sourceMappingURL=_id_-styles.D9a2kOBo.mjs.map
