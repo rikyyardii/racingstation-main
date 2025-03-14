@@ -10,6 +10,7 @@ import slugify from "slugify";
 import { createClient } from "redis";
 import { DateTime } from "luxon";
 import bcrypt from "bcrypt";
+import { scheduleJob } from "node-schedule";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -269,7 +270,12 @@ const generateUniqueStreamSlug = async (title) => {
 
 // Endpoint menyimpan stream
 app.post("/api/streams", async (req, res) => {
-  const { title, category, event, excerpt, link, link2, link3, link4, content, imagePath } = req.body;
+  const { title, category, event, excerpt, link, link2, link3, link4, content, scheduled_enable_time, scheduled_disable_time, imagePath } = req.body;
+
+  // Simpan waktu sesuai input user tanpa konversi UTC
+  const scheduledTime = scheduled_enable_time ? DateTime.fromISO(scheduled_enable_time, { zone: "Asia/Jakarta" }).toFormat("yyyy-MM-dd HH:mm:ss") : null;
+
+  const disableTime = scheduled_disable_time ? DateTime.fromISO(scheduled_disable_time, { zone: "Asia/Jakarta" }).toFormat("yyyy-MM-dd HH:mm:ss") : null;
 
   try {
     // Buat slug unik berdasarkan judul
@@ -296,10 +302,28 @@ app.post("/api/streams", async (req, res) => {
 
     // Query untuk menyimpan stream
     const query = `
-      INSERT INTO streams (slug, title, category, event, excerpt, link, link2, link3, link4, content, image_path, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO streams (
+        slug, title, category, event, excerpt, link, link2, link3, link4, 
+        content, image_path, created_at, status, scheduled_enable_time, scheduled_disable_time
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
-    const values = [slug, title, category, event, excerpt, link, link2, link3, link4, content, imagePath, formattedCreatedAt];
+    const values = [
+      slug,
+      title,
+      category,
+      event,
+      excerpt,
+      link,
+      link2,
+      link3,
+      link4,
+      content,
+      imagePath,
+      formattedCreatedAt,
+      "disable",
+      scheduledTime, // Simpan waktu sesuai input
+      disableTime,
+    ];
 
     await db.execute(query, values);
     res.status(201).send({ message: "Stream created successfully", slug });
@@ -381,82 +405,125 @@ app.get("/api/streams/:slug", async (req, res) => {
 // Edit Stream
 app.put("/api/streams/:slug", async (req, res) => {
   const { slug } = req.params;
-  const { title, category, event, excerpt, link, link2, link3, link4, content, status } = req.body;
+  const { title, category, event, excerpt, link, link2, link3, link4, content, status, scheduled_enable_time, scheduled_disable_time } = req.body;
 
-  // cek slug valid
-  if (!slug) {
+  // Handle conversion untuk scheduled_enable_time
+  let scheduledTime = null;
+  if (scheduled_enable_time && scheduled_enable_time !== "") {
+    try {
+      const dt = DateTime.fromISO(scheduled_enable_time, {
+        zone: "Asia/Jakarta",
+        setZone: true,
+      });
+
+      if (!dt.isValid) {
+        return res.status(400).json({
+          error: "Format waktu enable tidak valid",
+        });
+      }
+      scheduledTime = dt.toFormat("yyyy-MM-dd HH:mm:ss");
+    } catch (error) {
+      return res.status(400).json({
+        error: "Format datetime enable tidak valid",
+      });
+    }
+  } else if (scheduled_enable_time === "") {
+    scheduledTime = null;
+  }
+
+  // Handle conversion untuk scheduled_disable_time
+  let disableTime = null;
+  if (scheduled_disable_time && scheduled_disable_time !== "") {
+    try {
+      const dt = DateTime.fromISO(scheduled_disable_time, {
+        zone: "Asia/Jakarta",
+        setZone: true,
+      });
+
+      if (!dt.isValid) {
+        return res.status(400).json({
+          error: "Format waktu disable tidak valid",
+        });
+      }
+      disableTime = dt.toFormat("yyyy-MM-dd HH:mm:ss");
+    } catch (error) {
+      return res.status(400).json({
+        error: "Format datetime disable tidak valid",
+      });
+    }
+  } else if (scheduled_disable_time === "") {
+    disableTime = null;
+  }
+
+  // Validasi slug
+  if (!slug || slug.trim() === "") {
     return res.status(400).json({ error: "Slug tidak valid" });
   }
 
-  // cek inputan form
-  if (!title && !category && !event && !excerpt && !link && !link2 && !link3 && !link4 && !content && !status) {
-    return res.status(400).json({ error: "Tidak ada data yang dikirim untuk pembaruan" });
-  }
-
   try {
-    // Cek apakah stream dengan slug yang diberikan ada
-    const [existingStream] = await db.query("SELECT * FROM streams WHERE slug = ?", [slug]);
+    const [existingStream] = await db.query("SELECT id FROM streams WHERE slug = ?", [slug]);
     if (existingStream.length === 0) {
       return res.status(404).json({ error: "Stream tidak ditemukan" });
     }
 
     const updates = [];
     const values = [];
-    if (title) {
-      updates.push("title = ?");
-      values.push(title);
-    }
-    if (category) {
-      updates.push("category = ?");
-      values.push(category);
-    }
-    if (event) {
-      updates.push("event = ?");
-      values.push(event);
-    }
-    if (excerpt) {
-      updates.push("excerpt = ?");
-      values.push(excerpt);
-    }
-    if (link !== undefined) {
-      updates.push("link = ?");
-      values.push(link || ""); // Tetap simpan sebagai string kosong jika tidak ada nilai
-    }
-    if (link2 !== undefined) {
-      updates.push("link2 = ?");
-      values.push(link2 || "");
-    }
-    if (link3 !== undefined) {
-      updates.push("link3 = ?");
-      values.push(link3 || "");
-    }
-    if (link4 !== undefined) {
-      updates.push("link4 = ?");
-      values.push(link4 || "");
-    }
-    if (content) {
-      updates.push("content = ?");
-      values.push(content);
-    }
-    if (status) {
-      updates.push("status = ?");
-      values.push(status);
+
+    // Fungsi helper untuk membangun query
+    const addUpdate = (field, value) => {
+      if (value !== undefined) {
+        // Menerima null dan nilai valid
+        updates.push(`${field} = ?`);
+        values.push(value);
+      }
+    };
+
+    // Tambahkan semua field yang akan diupdate
+    addUpdate("title", title);
+    addUpdate("category", category);
+    addUpdate("event", event);
+    addUpdate("excerpt", excerpt);
+    addUpdate("link", link);
+    addUpdate("link2", link2);
+    addUpdate("link3", link3);
+    addUpdate("link4", link4);
+    addUpdate("content", content);
+    addUpdate("status", status);
+    addUpdate("scheduled_enable_time", scheduledTime);
+    addUpdate("scheduled_disable_time", disableTime); // Ditambahkan di sini
+
+    if (updates.length === 0) {
+      return res.status(400).json({ error: "Tidak ada data valid untuk diupdate" });
     }
 
-    // Tambahkan slug ke values untuk WHERE
     values.push(slug);
 
-    // Eksekusi query update
     const query = `UPDATE streams SET ${updates.join(", ")} WHERE slug = ?`;
     await db.execute(query, values);
 
-    // Hapus cache (jika ada)
     await redisClient.del("/api/streams_card");
 
-    res.json({ message: "Stream berhasil diperbarui" });
+    res.json({
+      success: true,
+      message: "Stream berhasil diperbarui",
+      updated_fields: updates.map((update) => update.split(" = ")[0]),
+    });
   } catch (error) {
     console.error("Error updating stream:", error);
-    res.status(500).json({ error: "Gagal memperbarui stream" });
+
+    if (error.code === "ER_TRUNCATED_WRONG_VALUE") {
+      return res.status(400).json({
+        error: "Format data tidak valid",
+        detail: error.message,
+        field: "scheduled_time",
+        expected_format: "YYYY-MM-DD HH:mm:ss",
+      });
+    }
+
+    res.status(500).json({
+      error: "Gagal memperbarui stream",
+      detail: process.env.NODE_ENV === "development" ? error.message : "Hubungi administrator",
+    });
   }
 });
 
@@ -480,10 +547,13 @@ app.route("/api/articles/:id").put(async (req, res) => {
   const { id } = req.params;
   const { category, title, excerpt, date, author, readingTime, content } = req.body;
 
-  // Konversi tanggal UTC dari client ke Asia/Jakarta, lalu ambil tanggalnya
-  const formattedDate = DateTime.fromISO(date)
-    .setZone("Asia/Jakarta") // Konversi UTC ke WIB
-    .toFormat("yyyy-MM-dd");
+  // Validasi field wajib
+  if (!category || !title || !excerpt || !date || !author || !readingTime || !content) {
+    return res.status(400).json({ error: "Semua field harus diisi" });
+  }
+
+  // Konversi tanggal UTC ke Asia/Jakarta dengan format lengkap
+  const formattedDate = DateTime.fromISO(date).setZone("Asia/Jakarta").toFormat("yyyy-MM-dd HH:mm:ss"); // Format dengan waktu
 
   const query = `
     UPDATE articles
@@ -502,7 +572,7 @@ app.route("/api/articles/:id").put(async (req, res) => {
     }
   } catch (error) {
     console.error("Error updating article:", error);
-    res.status(500).json({ error: "Failed to update article" });
+    res.status(500).json({ error: "Gagal memperbarui artikel" });
   }
 });
 
@@ -600,6 +670,65 @@ app.get("/api/memory-usage", (req, res) => {
     external: `${(memoryUsage.external / 1024 / 1024).toFixed(2)} MB`,
   });
 });
+
+// Pindahkan fungsi ini ke bagian paling bawah file SEBELUM start server
+async function checkAndEnableStreams() {
+  try {
+    const now = DateTime.now().setZone("Asia/Jakarta").toFormat("yyyy-MM-dd HH:mm:ss");
+
+    const [streams] = await db.execute(
+      `SELECT id FROM streams 
+       WHERE status = 'disable' 
+         AND scheduled_enable_time IS NOT NULL 
+         AND scheduled_enable_time <= ?
+         AND (scheduled_disable_time IS NULL OR scheduled_disable_time > ?)`,
+      [now, now]
+    );
+
+    if (streams.length > 0) {
+      await db.execute(
+        `UPDATE streams SET status = 'enable' 
+         WHERE status = 'disable' 
+           AND scheduled_enable_time <= ?
+           AND (scheduled_disable_time IS NULL OR scheduled_disable_time > ?)`,
+        [now, now]
+      );
+      console.log(`Enabled ${streams.length} streams`);
+    }
+  } catch (error) {
+    console.error("Enable Scheduler error:", error);
+  }
+}
+
+async function checkAndDisableStreams() {
+  try {
+    const now = DateTime.now().setZone("Asia/Jakarta").toFormat("yyyy-MM-dd HH:mm:ss");
+
+    const [streams] = await db.execute(
+      `SELECT id FROM streams 
+       WHERE status = 'enable' 
+         AND scheduled_disable_time IS NOT NULL 
+         AND scheduled_disable_time <= ?`,
+      [now]
+    );
+
+    if (streams.length > 0) {
+      await db.execute(
+        `UPDATE streams SET status = 'disable' 
+         WHERE status = 'enable' 
+           AND scheduled_disable_time <= ?`,
+        [now]
+      );
+      console.log(`Disabled ${streams.length} streams`);
+    }
+  } catch (error) {
+    console.error("Disable Scheduler error:", error);
+  }
+}
+
+// Jalankan scheduler SETELAH didefinisikan
+scheduleJob("* * * * *", checkAndEnableStreams);
+scheduleJob("* * * * *", checkAndDisableStreams);
 
 // Start server
 const PORT = 5000;

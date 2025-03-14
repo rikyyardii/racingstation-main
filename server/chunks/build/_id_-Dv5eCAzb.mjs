@@ -1,0 +1,127 @@
+import { ref, watch, mergeProps, useSSRContext } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { DateTime } from 'luxon';
+import { c as _export_sfc, u as useRuntimeConfig } from './server.mjs';
+import { u as useSeoMeta } from './index-CFzRD-82.mjs';
+import { ssrRenderAttrs, ssrRenderStyle, ssrRenderAttr, ssrIncludeBooleanAttr, ssrLooseContain, ssrLooseEqual, ssrInterpolate } from 'vue/server-renderer';
+import { _ as _imports_0 } from './virtual_public-B1WKmCGa.mjs';
+import '../runtime.mjs';
+import 'node:http';
+import 'node:https';
+import 'node:fs';
+import 'node:path';
+import 'node:url';
+import '../routes/renderer.mjs';
+import 'vue-bundle-renderer/runtime';
+import 'devalue';
+import '@unhead/ssr';
+import 'unhead';
+import '@unhead/shared';
+
+const _sfc_main = {
+  setup() {
+    const article = ref({
+      id: null,
+      category: "",
+      title: "",
+      excerpt: "",
+      date: "",
+      author: "",
+      readingTime: "",
+      content: "",
+      image: null
+      // Gambar asli yang ditampilkan
+    });
+    useRoute();
+    const router = useRouter();
+    const formatDate = (dateString) => {
+      return DateTime.fromISO(dateString).setZone("Asia/Jakarta").toFormat("yyyy-MM-dd");
+    };
+    const formatDateForInput = (dateString) => {
+      if (!dateString)
+        return "";
+      return DateTime.fromISO(dateString).setZone("Asia/Jakarta").toFormat("yyyy-MM-dd'T'HH:mm");
+    };
+    const { API_URL, IMAGE_URL } = useRuntimeConfig().public;
+    const calculateReadingTime = (content) => {
+      const wordsPerMinute = 200;
+      const trimmedContent = content.trim();
+      if (!trimmedContent) {
+        article.value.readingTime = 0;
+        return;
+      }
+      const wordCount = trimmedContent.split(/\s+/).length;
+      article.value.readingTime = Math.ceil(wordCount / wordsPerMinute);
+    };
+    watch(
+      () => article.value.content,
+      (newContent) => {
+        calculateReadingTime(newContent);
+      },
+      { immediate: true }
+    );
+    const submitArticle = async () => {
+      if (!article.value.id) {
+        alert("ID artikel tidak valid.");
+        return;
+      }
+      try {
+        const utcDate = DateTime.fromISO(article.value.date, { zone: "Asia/Jakarta" }).toUTC().toISO();
+        const response = await fetch(`${API_URL}/articles/${article.value.id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            category: article.value.category,
+            title: article.value.title,
+            excerpt: article.value.excerpt,
+            date: utcDate,
+            author: article.value.author,
+            readingTime: article.value.readingTime,
+            content: article.value.content
+          })
+        });
+        const result = await response.json();
+        if (response.ok) {
+          alert("Artikel berhasil diperbarui!");
+          router.push("../components/Home");
+        } else {
+          alert("Gagal memperbarui artikel: " + result.error);
+        }
+      } catch (error) {
+        console.error("Error updating article:", error);
+        alert("Terjadi kesalahan saat memperbarui artikel.");
+      }
+    };
+    useSeoMeta({
+      title: "Edit Artikel",
+      ogTitle: "Edit Artikel"
+    });
+    return {
+      article,
+      submitArticle,
+      formatDate,
+      formatDateForInput
+    };
+  }
+};
+function _sfc_ssrRender(_ctx, _push, _parent, _attrs, $props, $setup, $data, $options) {
+  _push(`<div${ssrRenderAttrs(mergeProps({ class: "app-wrapper" }, _attrs))} data-v-90feca4e><header data-v-90feca4e><div class="header-content" data-v-90feca4e><h1 class="logo" style="${ssrRenderStyle({ "cursor": "pointer" })}" data-v-90feca4e><img${ssrRenderAttr("src", _imports_0)} alt="RacingStation Logo" class="logo-image" data-v-90feca4e> Dashboard </h1></div></header><div class="dashboard" data-v-90feca4e><h1 data-v-90feca4e>Edit Articles</h1><div class="form-container" data-v-90feca4e><form data-v-90feca4e><div class="form-group" data-v-90feca4e><label data-v-90feca4e>Current Image:</label>`);
+  if ($setup.article.image) {
+    _push(`<div data-v-90feca4e><img${ssrRenderAttr("src", $setup.article.image)} alt="Current Article Image" class="current-image" data-v-90feca4e></div>`);
+  } else {
+    _push(`<div data-v-90feca4e><span data-v-90feca4e>No image available</span></div>`);
+  }
+  _push(`</div><div class="form-group" data-v-90feca4e><label for="category" data-v-90feca4e>Category:</label><select id="category" required data-v-90feca4e><option value="Formula 1" data-v-90feca4e${ssrIncludeBooleanAttr(Array.isArray($setup.article.category) ? ssrLooseContain($setup.article.category, "Formula 1") : ssrLooseEqual($setup.article.category, "Formula 1")) ? " selected" : ""}>Formula 1</option><option value="MotoGP" data-v-90feca4e${ssrIncludeBooleanAttr(Array.isArray($setup.article.category) ? ssrLooseContain($setup.article.category, "MotoGP") : ssrLooseEqual($setup.article.category, "MotoGP")) ? " selected" : ""}>MotoGP</option><option value="WEC" data-v-90feca4e${ssrIncludeBooleanAttr(Array.isArray($setup.article.category) ? ssrLooseContain($setup.article.category, "WEC") : ssrLooseEqual($setup.article.category, "WEC")) ? " selected" : ""}>WEC</option><option value="WRC" data-v-90feca4e${ssrIncludeBooleanAttr(Array.isArray($setup.article.category) ? ssrLooseContain($setup.article.category, "WRC") : ssrLooseEqual($setup.article.category, "WRC")) ? " selected" : ""}>WRC</option></select></div><div class="form-group" data-v-90feca4e><label for="title" data-v-90feca4e>Title:</label><input type="text" id="title"${ssrRenderAttr("value", $setup.article.title)} required data-v-90feca4e></div><div class="form-group" data-v-90feca4e><label for="excerpt" data-v-90feca4e>Excerpt:</label><input type="text" id="excerpt"${ssrRenderAttr("value", $setup.article.excerpt)} required data-v-90feca4e></div><div class="form-group" data-v-90feca4e><label for="date" data-v-90feca4e>Date:</label><input type="datetime-local" id="date"${ssrRenderAttr("value", $setup.formatDateForInput($setup.article.date))} required data-v-90feca4e></div><div class="form-group" data-v-90feca4e><label for="author" data-v-90feca4e>Author:</label><input type="text" id="author"${ssrRenderAttr("value", $setup.article.author)} required data-v-90feca4e></div><div class="form-group" data-v-90feca4e><label for="content" data-v-90feca4e>Content:</label><textarea id="content" required data-v-90feca4e>${ssrInterpolate($setup.article.content)}</textarea></div><div class="form-group" data-v-90feca4e><label for="readingTime" data-v-90feca4e>Reading Time (min):</label><input type="number" id="readingTime"${ssrRenderAttr("value", $setup.article.readingTime)} required disabled data-v-90feca4e></div><button type="submit" data-v-90feca4e>Update Article</button></form></div></div></div>`);
+}
+const _sfc_setup = _sfc_main.setup;
+_sfc_main.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("pages/rikya/edit_artikel/[id].vue");
+  return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
+};
+const _id_ = /* @__PURE__ */ _export_sfc(_sfc_main, [["ssrRender", _sfc_ssrRender], ["__scopeId", "data-v-90feca4e"]]);
+
+export { _id_ as default };
+//# sourceMappingURL=_id_-Dv5eCAzb.mjs.map

@@ -669,72 +669,72 @@ const _routes = [
   {
     name: "about-contact-page",
     path: "/about/contact-page",
-    component: () => import('./contact-page-B-vCbbbg.mjs')
+    component: () => import('./contact-page-PChEpvD_.mjs')
   },
   {
     name: "about-disclaimer",
     path: "/about/disclaimer",
-    component: () => import('./disclaimer-HOlDDRsg.mjs')
+    component: () => import('./disclaimer-CibYT48k.mjs')
   },
   {
     name: "about-privacy-policy",
     path: "/about/privacy-policy",
-    component: () => import('./privacy-policy-B5MrM5lC.mjs')
+    component: () => import('./privacy-policy-2_fQNi1p.mjs')
   },
   {
     name: "about-racingstation",
     path: "/about/racingstation",
-    component: () => import('./racingstation-C-t_bpms.mjs')
+    component: () => import('./racingstation-CGXU4PCc.mjs')
   },
   {
     name: "about-tos",
     path: "/about/tos",
-    component: () => import('./tos-BCnOxBzM.mjs')
+    component: () => import('./tos-DB5spt0r.mjs')
   },
   {
     name: "article-id",
     path: "/article/:id()",
-    component: () => import('./_id_-CsC0Yc5N.mjs')
+    component: () => import('./_id_-CoZFc5Tm.mjs')
   },
   {
     name: "index",
     path: "/",
-    component: () => import('./index-D3Kro3JL.mjs')
+    component: () => import('./index-4f2b2NB1.mjs')
   },
   {
     name: "rikya-components-add_artikel",
     path: "/rikya/components/add_artikel",
-    component: () => import('./add_artikel-CJ8sXVdl.mjs')
+    component: () => import('./add_artikel-6yRnyC1L.mjs')
   },
   {
     name: "rikya-components-add_livestream",
     path: "/rikya/components/add_livestream",
-    component: () => import('./add_livestream-DQTyVVja.mjs')
+    component: () => import('./add_livestream-ZniUEYt1.mjs')
   },
   {
     name: "rikya-components-Artikel",
     path: "/rikya/components/Artikel",
-    component: () => import('./Artikel-C0EHAK2U.mjs')
+    component: () => import('./Artikel-erukI0ma.mjs')
   },
   {
     name: "rikya-components-Home",
     path: "/rikya/components/Home",
-    component: () => import('./Home-BVSVSck0.mjs')
+    component: () => import('./Home-pR22YwUz.mjs')
   },
   {
     name: "rikya-components-LiveStream",
     path: "/rikya/components/LiveStream",
-    component: () => import('./LiveStream-aRfmY9hg.mjs')
+    component: () => import('./LiveStream-DZLZfEIy.mjs')
   },
   {
     name: "rikya-edit_artikel-id",
     path: "/rikya/edit_artikel/:id()",
-    component: () => import('./_id_-CTZry6ts.mjs')
+    component: () => import('./_id_-Dv5eCAzb.mjs')
   },
   {
     name: "rikya-edit_stream-id",
     path: "/rikya/edit_stream/:id()",
-    component: () => import('./_id_-BA_snhQh.mjs')
+    component: () => import('./_id_-Ba4B5UdV.mjs')
   },
   {
     name: "rikya",
@@ -744,12 +744,12 @@ const _routes = [
   {
     name: "stream",
     path: "/stream",
-    component: () => import('./stream-BkQFMyeA.mjs')
+    component: () => import('./stream-LIbwGHn7.mjs')
   },
   {
     name: "watch-id",
     path: "/watch/:id()",
-    component: () => import('./_id_-BoI_ikLl.mjs')
+    component: () => import('./_id_-BF42TBw1.mjs')
   },
   {
     name: "watch-offline_screen",
