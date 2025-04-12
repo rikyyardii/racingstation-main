@@ -368,6 +368,51 @@ app.post("/api/upload-image", upload.single("image"), (req, res) => {
   }
 });
 
+// Configure storage for editor images
+const editorStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, "../public/img");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, file.fieldname + "-" + uniqueSuffix + ext);
+  },
+});
+
+const editorUpload = multer({
+  storage: editorStorage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: function (req, file, cb) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+      return cb(new Error("Only image files are allowed!"), false);
+    }
+    cb(null, true);
+  },
+});
+
+// Handle editor image uploads - PERUBAHAN DI SINI
+app.post("/api/upload-editor-image", editorUpload.single("file"), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No file uploaded" });
+    }
+
+    const filePath = `/public/img/${req.file.filename}`;
+    res.json({
+      success: true,
+      location: filePath,
+    });
+  } catch (error) {
+    console.error("Error uploading editor image:", error);
+    res.status(500).json({ success: false, message: "Failed to upload image" });
+  }
+});
+
 // baru
 app.get("/api/streams", async (req, res) => {
   const { slug } = req.query; // Ambil parameter slug dari query
