@@ -699,7 +699,7 @@ const _routes = [
   {
     name: "index",
     path: "/",
-    component: () => import('./index-Qy6pAul9.mjs')
+    component: () => import('./index-BDIs4LTp.mjs')
   },
   {
     name: "rikya-components-add_artikel",
@@ -744,12 +744,12 @@ const _routes = [
   {
     name: "stream",
     path: "/stream",
-    component: () => import('./stream-BZDCpSU7.mjs')
+    component: () => import('./stream-_vP0vpnW.mjs')
   },
   {
     name: "watch-id",
     path: "/watch/:id()",
-    component: () => import('./_id_-BTmhqhgs.mjs')
+    component: () => import('./_id_-ChFKIUoy.mjs')
   },
   {
     name: "watch-offline_screen",
