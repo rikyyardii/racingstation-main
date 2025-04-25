@@ -156,6 +156,18 @@ app.get("/api/streams_card", async (req, res) => {
   }
 });
 
+// route /api/streams_card (LiveStream.vue)
+app.get("/api/adslink_card", async (req, res) => {
+  try {
+    const query = "SELECT * FROM adslink";
+    const [streams] = await db.execute(query);
+    res.json(streams);
+  } catch (error) {
+    console.error("Error fetching streams:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 // ambil stream dengan status enable (stream.vue)
 app.get("/api/streams_enabled", async (req, res) => {
   try {
@@ -684,6 +696,107 @@ app.delete("/api/streams/:id", async (req, res) => {
   }
 });
 
+// Endpoint to get all adslinks
+app.get("/api/adslink", cacheMiddleware, async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT * FROM adslink");
+    await redisClient.setEx(req.originalUrl, 3600, JSON.stringify(rows));
+    res.json(rows);
+  } catch (error) {
+    console.error("Error fetching adslinks:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Endpoint to get a single adslink by ID
+app.get("/api/adslink/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [rows] = await db.query("SELECT * FROM adslink WHERE id = ?", [id]);
+    if (rows.length > 0) {
+      res.json(rows[0]);
+    } else {
+      res.status(404).json({ error: "Adslink not found" });
+    }
+  } catch (error) {
+    console.error("Error fetching adslink:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Endpoint to create a new adslink
+app.post("/api/adslink", async (req, res) => {
+  const { name, adslink } = req.body;
+
+  // Validate required fields
+  if (!name || !adslink) {
+    return res.status(400).json({ error: "Name and adslink are required" });
+  }
+
+  try {
+    const query = "INSERT INTO adslink (name, adslink) VALUES (?, ?)";
+    const [result] = await db.execute(query, [name, adslink]);
+
+    // Clear cache after creating new adslink
+    await redisClient.del("/api/adslinks");
+
+    res.status(201).json({
+      message: "Adslink created successfully",
+      id: result.insertId,
+    });
+  } catch (error) {
+    console.error("Error creating adslink:", error);
+    res.status(500).json({ error: "Failed to create adslink" });
+  }
+});
+
+// Endpoint to update an adslink
+app.put("/api/adslink/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name, adslink } = req.body;
+
+  // Validate required fields
+  if (!name || !adslink) {
+    return res.status(400).json({ error: "Name and adslink are required" });
+  }
+
+  try {
+    const query = "UPDATE adslink SET name = ?, adslink = ? WHERE id = ?";
+    const [result] = await db.execute(query, [name, adslink, id]);
+
+    if (result.affectedRows > 0) {
+      // Clear cache after updating
+      await redisClient.del("/api/adslinks");
+      res.json({ message: "Adslink updated successfully" });
+    } else {
+      res.status(404).json({ error: "Adslink not found" });
+    }
+  } catch (error) {
+    console.error("Error updating adslink:", error);
+    res.status(500).json({ error: "Failed to update adslink" });
+  }
+});
+
+// Endpoint to delete an adslink
+app.delete("/api/adslink/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [result] = await db.execute("DELETE FROM adslink WHERE id = ?", [id]);
+
+    if (result.affectedRows > 0) {
+      // Clear cache after deleting
+      await redisClient.del("/api/adslinks");
+      res.json({ message: "Adslink deleted successfully" });
+    } else {
+      res.status(404).json({ error: "Adslink not found" });
+    }
+  } catch (error) {
+    console.error("Error deleting adslink:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 // Endpoint hitung jumlah artikel
 app.get("/api/articles_count", async (req, res) => {
   try {
@@ -702,6 +815,17 @@ app.get("/api/streams_count", async (req, res) => {
     res.json({ totalStream: rows[0].total });
   } catch (error) {
     console.error("Error counting streams:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Endpoint hitung jumlah adslink
+app.get("/api/adslink_count", async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT COUNT(*) AS total FROM adslink");
+    res.json({ totalAdslink: rows[0].total });
+  } catch (error) {
+    console.error("Error counting adslink:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });

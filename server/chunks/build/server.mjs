@@ -699,42 +699,57 @@ const _routes = [
   {
     name: "index",
     path: "/",
-    component: () => import('./index-BDIs4LTp.mjs')
+    component: () => import('./index-CoY4vvSf.mjs')
+  },
+  {
+    name: "rikya-components-add_adslink",
+    path: "/rikya/components/add_adslink",
+    component: () => import('./add_adslink-D9CtYHjF.mjs')
   },
   {
     name: "rikya-components-add_artikel",
     path: "/rikya/components/add_artikel",
-    component: () => import('./add_artikel-DyYxcbPm.mjs')
+    component: () => import('./add_artikel-CX5jKcDs.mjs')
   },
   {
     name: "rikya-components-add_livestream",
     path: "/rikya/components/add_livestream",
-    component: () => import('./add_livestream-dOaaV3xt.mjs')
+    component: () => import('./add_livestream-D1m8g9Xy.mjs')
+  },
+  {
+    name: "rikya-components-Ads",
+    path: "/rikya/components/Ads",
+    component: () => import('./Ads-DkacRVhQ.mjs')
   },
   {
     name: "rikya-components-Artikel",
     path: "/rikya/components/Artikel",
-    component: () => import('./Artikel-DOuNtMK3.mjs')
+    component: () => import('./Artikel-DADuRGiD.mjs')
   },
   {
     name: "rikya-components-Home",
     path: "/rikya/components/Home",
-    component: () => import('./Home-CVeNsvAC.mjs')
+    component: () => import('./Home-CY7FDTzg.mjs')
   },
   {
     name: "rikya-components-LiveStream",
     path: "/rikya/components/LiveStream",
-    component: () => import('./LiveStream-DZkQPsV6.mjs')
+    component: () => import('./LiveStream-BRDr-BzM.mjs')
+  },
+  {
+    name: "rikya-edit_adslink-id",
+    path: "/rikya/edit_adslink/:id()",
+    component: () => import('./_id_-CrXBcHEv.mjs')
   },
   {
     name: "rikya-edit_artikel-id",
     path: "/rikya/edit_artikel/:id()",
-    component: () => import('./_id_-BTpnBnHj.mjs')
+    component: () => import('./_id_-BBh-roe1.mjs')
   },
   {
     name: "rikya-edit_stream-id",
     path: "/rikya/edit_stream/:id()",
-    component: () => import('./_id_-CV9IuIMw.mjs')
+    component: () => import('./_id_-B6A6dXqF.mjs')
   },
   {
     name: "rikya",
@@ -744,12 +759,12 @@ const _routes = [
   {
     name: "stream",
     path: "/stream",
-    component: () => import('./stream-_vP0vpnW.mjs')
+    component: () => import('./stream-CtaGys_C.mjs')
   },
   {
     name: "watch-id",
     path: "/watch/:id()",
-    component: () => import('./_id_-ChFKIUoy.mjs')
+    component: () => import('./_id_-D2y6uGMj.mjs')
   },
   {
     name: "watch-offline_screen",
