@@ -1,3 +1,4 @@
+import dotenv from "dotenv";
 import express from "express";
 import mysql from "mysql2/promise";
 import cors from "cors";
@@ -11,6 +12,7 @@ import { createClient } from "redis";
 import { DateTime } from "luxon";
 import bcrypt from "bcrypt";
 import { scheduleJob } from "node-schedule";
+import { TwitterApi } from "twitter-api-v2";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -282,7 +284,7 @@ const generateUniqueStreamSlug = async (title) => {
 
 // Endpoint menyimpan stream
 app.post("/api/streams", async (req, res) => {
-  const { title, category, event, excerpt, link, link2, link3, link4, content, scheduled_enable_time, scheduled_disable_time, imagePath } = req.body;
+  const { title, category, event, excerpt, link, link2, link3, link4, content, session_name, scheduled_enable_time, scheduled_disable_time, imagePath } = req.body;
 
   // Simpan waktu sesuai input user tanpa konversi UTC
   const scheduledTime = scheduled_enable_time ? DateTime.fromISO(scheduled_enable_time, { zone: "Asia/Jakarta" }).toFormat("yyyy-MM-dd HH:mm:ss") : null;
@@ -316,8 +318,8 @@ app.post("/api/streams", async (req, res) => {
     const query = `
       INSERT INTO streams (
         slug, title, category, event, excerpt, link, link2, link3, link4, 
-        content, image_path, created_at, status, scheduled_enable_time, scheduled_disable_time
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        content, session_name, image_path, created_at, status, scheduled_enable_time, scheduled_disable_time
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const values = [
       slug,
@@ -330,6 +332,7 @@ app.post("/api/streams", async (req, res) => {
       link3,
       link4,
       content,
+      session_name,
       imagePath,
       formattedCreatedAt,
       "disable",
@@ -462,7 +465,7 @@ app.get("/api/streams/:slug", async (req, res) => {
 // Edit Stream
 app.put("/api/streams/:slug", async (req, res) => {
   const { slug } = req.params;
-  const { title, category, event, excerpt, link, link2, link3, link4, content, status, scheduled_enable_time, scheduled_disable_time } = req.body;
+  const { title, category, event, excerpt, link, link2, link3, link4, content, status, session_name, event_type, scheduled_enable_time, scheduled_disable_time } = req.body;
 
   // Handle conversion untuk scheduled_enable_time
   let scheduledTime = null;
@@ -546,6 +549,8 @@ app.put("/api/streams/:slug", async (req, res) => {
     addUpdate("link4", link4);
     addUpdate("content", content);
     addUpdate("status", status);
+    addUpdate("session_name", session_name);
+    addUpdate("event_type", event_type);
     addUpdate("scheduled_enable_time", scheduledTime);
     addUpdate("scheduled_disable_time", disableTime); // Ditambahkan di sini
 
@@ -726,7 +731,7 @@ app.get("/api/adslink/:id", async (req, res) => {
 
 // Endpoint to create a new adslink
 app.post("/api/adslink", async (req, res) => {
-  const { name, adslink } = req.body;
+  const { name, adslink, status } = req.body;
 
   // Validate required fields
   if (!name || !adslink) {
@@ -734,7 +739,7 @@ app.post("/api/adslink", async (req, res) => {
   }
 
   try {
-    const query = "INSERT INTO adslink (name, adslink) VALUES (?, ?)";
+    const query = "INSERT INTO adslink (name, adslink, status) VALUES (?, ?, ?)";
     const [result] = await db.execute(query, [name, adslink]);
 
     // Clear cache after creating new adslink
@@ -753,7 +758,7 @@ app.post("/api/adslink", async (req, res) => {
 // Endpoint to update an adslink
 app.put("/api/adslink/:id", async (req, res) => {
   const { id } = req.params;
-  const { name, adslink } = req.body;
+  const { name, adslink, status } = req.body;
 
   // Validate required fields
   if (!name || !adslink) {
@@ -761,8 +766,8 @@ app.put("/api/adslink/:id", async (req, res) => {
   }
 
   try {
-    const query = "UPDATE adslink SET name = ?, adslink = ? WHERE id = ?";
-    const [result] = await db.execute(query, [name, adslink, id]);
+    const query = "UPDATE adslink SET name = ?, adslink = ?, status = ? WHERE id = ?";
+    const [result] = await db.execute(query, [name, adslink, status, id]);
 
     if (result.affectedRows > 0) {
       // Clear cache after updating
@@ -840,13 +845,24 @@ app.get("/api/memory-usage", (req, res) => {
   });
 });
 
-// Pindahkan fungsi ini ke bagian paling bawah file SEBELUM start server
+dotenv.config({ path: path.join(__dirname, "../.env") });
+
+// Configure Twitter client
+const twitterClient = new TwitterApi({
+  appKey: process.env.API_KEY,
+  appSecret: process.env.API_SECRET,
+  accessToken: process.env.ACCESS_TOKEN,
+  accessSecret: process.env.ACCESS_SECRET,
+}).readWrite;
+
+// Modified checkAndEnableStreams function with Twitter integration
 async function checkAndEnableStreams() {
   try {
     const now = DateTime.now().setZone("Asia/Jakarta").toFormat("yyyy-MM-dd HH:mm:ss");
 
+    // Get streams that should be enabled now
     const [streams] = await db.execute(
-      `SELECT id FROM streams 
+      `SELECT id, slug, event, title, session_name, event_type FROM streams 
        WHERE status = 'disable' 
          AND scheduled_enable_time IS NOT NULL 
          AND scheduled_enable_time <= ?
@@ -855,6 +871,7 @@ async function checkAndEnableStreams() {
     );
 
     if (streams.length > 0) {
+      // Update streams to enabled
       await db.execute(
         `UPDATE streams SET status = 'enable' 
          WHERE status = 'disable' 
@@ -862,7 +879,19 @@ async function checkAndEnableStreams() {
            AND (scheduled_disable_time IS NULL OR scheduled_disable_time > ?)`,
         [now, now]
       );
+
       console.log(`Enabled ${streams.length} streams`);
+
+      // Tweet about each enabled stream
+      for (const stream of streams) {
+        try {
+          const tweetText = `Live streaming ${stream.session_name} ${stream.event} is ON! ${stream.event_type} https://racingstation.top/watch/${stream.slug}`;
+          await twitterClient.v2.tweet(tweetText);
+          console.log(`Tweeted about stream: ${stream.title}`);
+        } catch (tweetError) {
+          console.error("Error sending tweet:", tweetError);
+        }
+      }
     }
   } catch (error) {
     console.error("Enable Scheduler error:", error);

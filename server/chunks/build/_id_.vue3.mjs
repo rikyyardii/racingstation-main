@@ -1,0 +1,62 @@
+import { ref, mergeProps, useSSRContext } from 'vue';
+import { ssrRenderAttrs, ssrRenderStyle, ssrRenderAttr, ssrInterpolate, ssrIncludeBooleanAttr, ssrLooseContain, ssrLooseEqual } from 'vue/server-renderer';
+import { _ as _export_sfc, c as useRouter, d as useRoute, u as useRuntimeConfig, a as _imports_0 } from './server.mjs';
+import { u as useSeoMeta } from './v3.mjs';
+import '../_/nitro.mjs';
+import 'node:http';
+import 'node:https';
+import 'node:events';
+import 'node:buffer';
+import 'node:fs';
+import 'node:path';
+import 'node:crypto';
+import 'node:url';
+import 'vue-router';
+import '../routes/renderer.mjs';
+import 'vue-bundle-renderer/runtime';
+import 'unhead/server';
+import 'unhead/plugins';
+import 'unhead/utils';
+import 'devalue';
+
+const _sfc_main = {
+  __name: "[id]",
+  __ssrInlineRender: true,
+  setup(__props) {
+    useRouter();
+    useRoute();
+    const stream = ref({
+      title: "",
+      category: "",
+      event: "",
+      excerpt: "",
+      link: "",
+      link2: "",
+      link3: "",
+      link4: "",
+      content: "",
+      event_type: "",
+      scheduled_enable_time: null,
+      scheduled_disable_time: null,
+      status: ""
+    });
+    const { API_URL } = useRuntimeConfig().public;
+    useSeoMeta({
+      title: "Edit Streaming",
+      ogTitle: "Edit Streaming"
+    });
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<div${ssrRenderAttrs(mergeProps({ class: "app-wrapper" }, _attrs))} data-v-9079a8f4><header data-v-9079a8f4><div class="header-content" data-v-9079a8f4><h1 class="logo" style="${ssrRenderStyle({ "cursor": "pointer" })}" data-v-9079a8f4><img${ssrRenderAttr("src", _imports_0)} alt="RacingStation Logo" class="logo-image" data-v-9079a8f4> Dashboard </h1></div></header><div class="container" data-v-9079a8f4><h2 class="black-text" data-v-9079a8f4>Edit Livestream</h2><form data-v-9079a8f4><div data-v-9079a8f4><label for="title" data-v-9079a8f4>Title</label><input type="text"${ssrRenderAttr("value", stream.value.title)} id="title" required data-v-9079a8f4></div><div class="form-group" data-v-9079a8f4><label for="category" data-v-9079a8f4>Category:</label><select id="category" required data-v-9079a8f4><option value="Motorsport" data-v-9079a8f4${ssrIncludeBooleanAttr(Array.isArray(stream.value.category) ? ssrLooseContain(stream.value.category, "Motorsport") : ssrLooseEqual(stream.value.category, "Motorsport")) ? " selected" : ""}>Motorsport</option><option value="Football" data-v-9079a8f4${ssrIncludeBooleanAttr(Array.isArray(stream.value.category) ? ssrLooseContain(stream.value.category, "Football") : ssrLooseEqual(stream.value.category, "Football")) ? " selected" : ""}>Football</option></select></div><div data-v-9079a8f4><label for="event" data-v-9079a8f4>Live Event</label><input type="text"${ssrRenderAttr("value", stream.value.event)} id="event" data-v-9079a8f4></div><div data-v-9079a8f4><label for="event_type" data-v-9079a8f4>Tipe Race Week</label><select id="event_type" data-v-9079a8f4><option value="" data-v-9079a8f4${ssrIncludeBooleanAttr(Array.isArray(stream.value.event_type) ? ssrLooseContain(stream.value.event_type, "") : ssrLooseEqual(stream.value.event_type, "")) ? " selected" : ""}>kosong (Race WEC dan lainnya)</option><option value="(The link will remain the same for all sessions in this race week including FP1, FP2, FP3, Qualifying, and Race)" data-v-9079a8f4${ssrIncludeBooleanAttr(Array.isArray(stream.value.event_type) ? ssrLooseContain(stream.value.event_type, "(The link will remain the same for all sessions in this race week including FP1, FP2, FP3, Qualifying, and Race)") : ssrLooseEqual(stream.value.event_type, "(The link will remain the same for all sessions in this race week including FP1, FP2, FP3, Qualifying, and Race)")) ? " selected" : ""}>Normal (F1)</option><option value="(The link will remain the same for all sessions in this race week including FP1, Sprint Qualifying, Sprint Race, Qualifying, and Race)" data-v-9079a8f4${ssrIncludeBooleanAttr(Array.isArray(stream.value.event_type) ? ssrLooseContain(stream.value.event_type, "(The link will remain the same for all sessions in this race week including FP1, Sprint Qualifying, Sprint Race, Qualifying, and Race)") : ssrLooseEqual(stream.value.event_type, "(The link will remain the same for all sessions in this race week including FP1, Sprint Qualifying, Sprint Race, Qualifying, and Race)")) ? " selected" : ""}>Sprint (F1)</option><option value="(The link will remain the same for all sessions in this race week including FP1, Practice, FP2, Qualifying, Sprint, Warm Up and Race)" data-v-9079a8f4${ssrIncludeBooleanAttr(Array.isArray(stream.value.event_type) ? ssrLooseContain(stream.value.event_type, "(The link will remain the same for all sessions in this race week including FP1, Practice, FP2, Qualifying, Sprint, Warm Up and Race)") : ssrLooseEqual(stream.value.event_type, "(The link will remain the same for all sessions in this race week including FP1, Practice, FP2, Qualifying, Sprint, Warm Up and Race)")) ? " selected" : ""}>Normal (MotoGP)</option></select></div><div data-v-9079a8f4><label for="excerpt" data-v-9079a8f4>Excerpt</label><input type="text"${ssrRenderAttr("value", stream.value.excerpt)} id="excerpt" required data-v-9079a8f4></div><div data-v-9079a8f4><label for="link" data-v-9079a8f4>Link 1</label><input type="text"${ssrRenderAttr("value", stream.value.link)} id="link" required data-v-9079a8f4></div><div data-v-9079a8f4><label for="link2" data-v-9079a8f4>Link 2</label><input type="text"${ssrRenderAttr("value", stream.value.link2)} id="link2" data-v-9079a8f4></div><div data-v-9079a8f4><label for="link3" data-v-9079a8f4>Link 3</label><input type="text"${ssrRenderAttr("value", stream.value.link3)} id="link3" data-v-9079a8f4></div><div data-v-9079a8f4><label for="link4" data-v-9079a8f4>Link 4</label><input type="text"${ssrRenderAttr("value", stream.value.link4)} id="link4" data-v-9079a8f4></div><div data-v-9079a8f4><label for="content" data-v-9079a8f4>Content</label><textarea id="content" required data-v-9079a8f4>${ssrInterpolate(stream.value.content)}</textarea></div><div class="form-group" data-v-9079a8f4><label for="category" data-v-9079a8f4>Pilih Sesi</label><select id="session_name" data-v-9079a8f4><option value="Free Practice 1 F1" data-v-9079a8f4${ssrIncludeBooleanAttr(Array.isArray(stream.value.session_name) ? ssrLooseContain(stream.value.session_name, "Free Practice 1 F1") : ssrLooseEqual(stream.value.session_name, "Free Practice 1 F1")) ? " selected" : ""}>FP1 (F1)</option><option value="Free Practice 2 F1" data-v-9079a8f4${ssrIncludeBooleanAttr(Array.isArray(stream.value.session_name) ? ssrLooseContain(stream.value.session_name, "Free Practice 2 F1") : ssrLooseEqual(stream.value.session_name, "Free Practice 2 F1")) ? " selected" : ""}>FP2 (F1)</option><option value="Free Practice 3 F1" data-v-9079a8f4${ssrIncludeBooleanAttr(Array.isArray(stream.value.session_name) ? ssrLooseContain(stream.value.session_name, "Free Practice 3 F1") : ssrLooseEqual(stream.value.session_name, "Free Practice 3 F1")) ? " selected" : ""}>FP3 (F1)</option><option value="Qualifying F1" data-v-9079a8f4${ssrIncludeBooleanAttr(Array.isArray(stream.value.session_name) ? ssrLooseContain(stream.value.session_name, "Qualifying F1") : ssrLooseEqual(stream.value.session_name, "Qualifying F1")) ? " selected" : ""}>Qualifying (F1)</option><option value="Spint Race F1" data-v-9079a8f4${ssrIncludeBooleanAttr(Array.isArray(stream.value.session_name) ? ssrLooseContain(stream.value.session_name, "Spint Race F1") : ssrLooseEqual(stream.value.session_name, "Spint Race F1")) ? " selected" : ""}>Sprint (F1)</option><option value="Race F1" data-v-9079a8f4${ssrIncludeBooleanAttr(Array.isArray(stream.value.session_name) ? ssrLooseContain(stream.value.session_name, "Race F1") : ssrLooseEqual(stream.value.session_name, "Race F1")) ? " selected" : ""}>Race (F1)</option><option value="Free Practice 1 MotoGP" data-v-9079a8f4${ssrIncludeBooleanAttr(Array.isArray(stream.value.session_name) ? ssrLooseContain(stream.value.session_name, "Free Practice 1 MotoGP") : ssrLooseEqual(stream.value.session_name, "Free Practice 1 MotoGP")) ? " selected" : ""}>FP1 (MotoGP)</option><option value="Practice MotoGP" data-v-9079a8f4${ssrIncludeBooleanAttr(Array.isArray(stream.value.session_name) ? ssrLooseContain(stream.value.session_name, "Practice MotoGP") : ssrLooseEqual(stream.value.session_name, "Practice MotoGP")) ? " selected" : ""}>Practice (MotoGP)</option><option value="Free Practice 2 MotoGP" data-v-9079a8f4${ssrIncludeBooleanAttr(Array.isArray(stream.value.session_name) ? ssrLooseContain(stream.value.session_name, "Free Practice 2 MotoGP") : ssrLooseEqual(stream.value.session_name, "Free Practice 2 MotoGP")) ? " selected" : ""}>FP2 (MotoGP)</option><option value="Qualifying MotoGP" data-v-9079a8f4${ssrIncludeBooleanAttr(Array.isArray(stream.value.session_name) ? ssrLooseContain(stream.value.session_name, "Qualifying MotoGP") : ssrLooseEqual(stream.value.session_name, "Qualifying MotoGP")) ? " selected" : ""}>Qualifying (MotoGP)</option><option value="Spint Race MotoGP" data-v-9079a8f4${ssrIncludeBooleanAttr(Array.isArray(stream.value.session_name) ? ssrLooseContain(stream.value.session_name, "Spint Race MotoGP") : ssrLooseEqual(stream.value.session_name, "Spint Race MotoGP")) ? " selected" : ""}>Sprint (MotoGP)</option><option value="Race MotoGP" data-v-9079a8f4${ssrIncludeBooleanAttr(Array.isArray(stream.value.session_name) ? ssrLooseContain(stream.value.session_name, "Race MotoGP") : ssrLooseEqual(stream.value.session_name, "Race MotoGP")) ? " selected" : ""}>Race (MotoGP)</option><option value="Race FIA WEC" data-v-9079a8f4${ssrIncludeBooleanAttr(Array.isArray(stream.value.session_name) ? ssrLooseContain(stream.value.session_name, "Race FIA WEC") : ssrLooseEqual(stream.value.session_name, "Race FIA WEC")) ? " selected" : ""}>Race (WEC)</option><option value="Match" data-v-9079a8f4${ssrIncludeBooleanAttr(Array.isArray(stream.value.session_name) ? ssrLooseContain(stream.value.session_name, "Match") : ssrLooseEqual(stream.value.session_name, "Match")) ? " selected" : ""}>Match (All Football)</option></select></div><div data-v-9079a8f4><label for="scheduledEnableTime" data-v-9079a8f4>Jadwal Enable (WIB)</label><input type="datetime-local" id="scheduledEnableTime"${ssrRenderAttr("value", stream.value.scheduled_enable_time)} data-v-9079a8f4></div><div data-v-9079a8f4><label for="scheduledDisableTime" data-v-9079a8f4>Jadwal Disable (WIB)</label><input type="datetime-local" id="scheduledDisableTime"${ssrRenderAttr("value", stream.value.scheduled_disable_time)} data-v-9079a8f4></div><div data-v-9079a8f4><label for="status" data-v-9079a8f4>Status</label><select id="status" data-v-9079a8f4><option value="enable" data-v-9079a8f4${ssrIncludeBooleanAttr(Array.isArray(stream.value.status) ? ssrLooseContain(stream.value.status, "enable") : ssrLooseEqual(stream.value.status, "enable")) ? " selected" : ""}>Enable</option><option value="disable" data-v-9079a8f4${ssrIncludeBooleanAttr(Array.isArray(stream.value.status) ? ssrLooseContain(stream.value.status, "disable") : ssrLooseEqual(stream.value.status, "disable")) ? " selected" : ""}>Disable</option></select></div><div class="buttons-container" data-v-9079a8f4><button type="button" class="action-btn cancel-btn" data-v-9079a8f4>Cancel</button><button type="submit" class="action-btn update-btn" data-v-9079a8f4>Update Stream</button></div></form></div></div>`);
+    };
+  }
+};
+const _sfc_setup = _sfc_main.setup;
+_sfc_main.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("pages/rikya/edit_stream/[id].vue");
+  return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
+};
+const _id_ = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-9079a8f4"]]);
+
+export { _id_ as default };
+//# sourceMappingURL=_id_.vue3.mjs.map
