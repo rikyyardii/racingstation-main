@@ -1,10 +1,10 @@
-import { hasInjectionContext, inject, version, unref, defineComponent, h, computed, ref, provide, shallowReactive, watch, Suspense, nextTick, Fragment, Transition, mergeProps, useSSRContext, resolveComponent, createApp, effectScope, reactive, getCurrentScope, getCurrentInstance, withCtx, createTextVNode, onErrorCaptured, onServerPrefetch, createVNode, resolveDynamicComponent, toRef, shallowRef, isReadonly, isRef, isShallow, isReactive, toRaw } from 'vue';
-import { $ as $fetch, l as defu, p as parseQuery, m as createHooks, h as createError$1, n as hasProtocol, o as joinURL, q as isScriptProtocol, w as withQuery, r as sanitizeStatusCode, t as withTrailingSlash, v as withoutTrailingSlash, x as toRouteMatcher, y as createRouter$1 } from '../runtime.mjs';
+import { defineComponent, ref, h, resolveComponent, hasInjectionContext, inject, unref, computed, getCurrentInstance, version, provide, shallowReactive, watch, Suspense, nextTick, Fragment, Transition, createApp, toRef, onErrorCaptured, onServerPrefetch, createVNode, resolveDynamicComponent, reactive, effectScope, shallowRef, isReadonly, isRef, isShallow, isReactive, toRaw, getCurrentScope, mergeProps, withCtx, createTextVNode, useSSRContext } from 'vue';
+import { p as parseQuery, l as hasProtocol, m as joinURL, w as withQuery, n as isScriptProtocol, o as withTrailingSlash, q as withoutTrailingSlash, r as sanitizeStatusCode, $ as $fetch, t as defu, v as createHooks, h as createError$1, x as toRouteMatcher, y as createRouter$1 } from '../runtime.mjs';
 import { b as baseURL } from '../routes/renderer.mjs';
 import { getActiveHead, CapoPlugin } from 'unhead';
 import { defineHeadPlugin } from '@unhead/shared';
 import { useRoute as useRoute$1, RouterView, createMemoryHistory, createRouter, START_LOCATION } from 'vue-router';
-import { ssrRenderAttrs, ssrRenderAttr, ssrInterpolate, ssrRenderComponent, ssrRenderSuspense, ssrRenderVNode } from 'vue/server-renderer';
+import { ssrRenderSuspense, ssrRenderComponent, ssrRenderVNode, ssrRenderAttrs, ssrRenderAttr, ssrInterpolate } from 'vue/server-renderer';
 import 'node:http';
 import 'node:https';
 import 'node:fs';
@@ -32,7 +32,7 @@ function createContext$1(opts = {}) {
     }
   }
   const _getCurrentInstance = () => {
-    if (als && currentInstance === void 0) {
+    if (als) {
       const instance = als.getStore();
       if (instance !== void 0) {
         return instance;
@@ -99,7 +99,6 @@ function createNamespace$1(defaultOpts = {}) {
       if (!contexts[key]) {
         contexts[key] = createContext$1({ ...defaultOpts, ...opts });
       }
-      contexts[key];
       return contexts[key];
     }
   };
@@ -503,8 +502,6 @@ function injectHead() {
     return _global[globalKey$1]();
   }
   const head = inject(headSymbol);
-  if (!head && "production" !== "production")
-    console.warn("Unhead is missing Vue context, falling back to shared context. This may have unexpected results.");
   return head || getActiveHead();
 }
 [CapoPlugin({ track: true })];
@@ -538,7 +535,7 @@ function createContext(opts = {}) {
     }
   }
   const _getCurrentInstance = () => {
-    if (als && currentInstance === void 0) {
+    if (als) {
       const instance = als.getStore();
       if (instance !== void 0) {
         return instance;
@@ -605,7 +602,6 @@ function createNamespace(defaultOpts = {}) {
       if (!contexts[key]) {
         contexts[key] = createContext({ ...defaultOpts, ...opts });
       }
-      contexts[key];
       return contexts[key];
     }
   };
@@ -669,107 +665,107 @@ const _routes = [
   {
     name: "about-contact-page",
     path: "/about/contact-page",
-    component: () => import('./contact-page-CXRanmuf.mjs')
+    component: () => import('./contact-page-B9ADf4EN.mjs')
   },
   {
     name: "about-disclaimer",
     path: "/about/disclaimer",
-    component: () => import('./disclaimer-D4nqkgw3.mjs')
+    component: () => import('./disclaimer-BUxlfkYX.mjs')
   },
   {
     name: "about-privacy-policy",
     path: "/about/privacy-policy",
-    component: () => import('./privacy-policy-CMpioYhg.mjs')
+    component: () => import('./privacy-policy-CxnVyDhE.mjs')
   },
   {
     name: "about-racingstation",
     path: "/about/racingstation",
-    component: () => import('./racingstation-DTzn_BuU.mjs')
+    component: () => import('./racingstation-AO23haKP.mjs')
   },
   {
     name: "about-tos",
     path: "/about/tos",
-    component: () => import('./tos-CM0e18Va.mjs')
+    component: () => import('./tos-B9NJ412R.mjs')
   },
   {
     name: "article-id",
     path: "/article/:id()",
-    component: () => import('./_id_-e5_74jOt.mjs')
+    component: () => import('./_id_-BcPLwbhk.mjs')
   },
   {
     name: "index",
     path: "/",
-    component: () => import('./index-CoY4vvSf.mjs')
+    component: () => import('./index-k2-WUm5H.mjs')
   },
   {
     name: "rikya-components-add_adslink",
     path: "/rikya/components/add_adslink",
-    component: () => import('./add_adslink-D9CtYHjF.mjs')
+    component: () => import('./add_adslink-BD3L0JJf.mjs')
   },
   {
     name: "rikya-components-add_artikel",
     path: "/rikya/components/add_artikel",
-    component: () => import('./add_artikel-CX5jKcDs.mjs')
+    component: () => import('./add_artikel-DjdhLEko.mjs')
   },
   {
     name: "rikya-components-add_livestream",
     path: "/rikya/components/add_livestream",
-    component: () => import('./add_livestream-D1m8g9Xy.mjs')
+    component: () => import('./add_livestream-DuhtOwuU.mjs')
   },
   {
     name: "rikya-components-Ads",
     path: "/rikya/components/Ads",
-    component: () => import('./Ads-DkacRVhQ.mjs')
+    component: () => import('./Ads-CFbQ54tQ.mjs')
   },
   {
     name: "rikya-components-Artikel",
     path: "/rikya/components/Artikel",
-    component: () => import('./Artikel-DADuRGiD.mjs')
+    component: () => import('./Artikel-57uXDC4L.mjs')
   },
   {
     name: "rikya-components-Home",
     path: "/rikya/components/Home",
-    component: () => import('./Home-CY7FDTzg.mjs')
+    component: () => import('./Home-BmCorQn1.mjs')
   },
   {
     name: "rikya-components-LiveStream",
     path: "/rikya/components/LiveStream",
-    component: () => import('./LiveStream-BRDr-BzM.mjs')
+    component: () => import('./LiveStream-DwdQaS8F.mjs')
   },
   {
     name: "rikya-edit_adslink-id",
     path: "/rikya/edit_adslink/:id()",
-    component: () => import('./_id_-CrXBcHEv.mjs')
+    component: () => import('./_id_-5EQyad0c.mjs')
   },
   {
     name: "rikya-edit_artikel-id",
     path: "/rikya/edit_artikel/:id()",
-    component: () => import('./_id_-BBh-roe1.mjs')
+    component: () => import('./_id_-DX9tviT8.mjs')
   },
   {
     name: "rikya-edit_stream-id",
     path: "/rikya/edit_stream/:id()",
-    component: () => import('./_id_-B6A6dXqF.mjs')
+    component: () => import('./_id_-D44NTcFU.mjs')
   },
   {
     name: "rikya",
     path: "/rikya",
-    component: () => import('./index-DQIXie54.mjs')
+    component: () => import('./index-DC-wGRYI.mjs')
   },
   {
     name: "stream",
     path: "/stream",
-    component: () => import('./stream-CtaGys_C.mjs')
+    component: () => import('./stream-CKLFhJ0R.mjs')
   },
   {
     name: "watch-id",
     path: "/watch/:id()",
-    component: () => import('./_id_-D2y6uGMj.mjs')
+    component: () => import('./_id_-C5g0FiXU.mjs')
   },
   {
     name: "watch-offline_screen",
     path: "/watch/offline_screen",
-    component: () => import('./offline_screen-Hj4FLKg_.mjs')
+    component: () => import('./offline_screen-DlF9lN9X.mjs')
   }
 ];
 const _wrapIf = (component, props, slots) => {

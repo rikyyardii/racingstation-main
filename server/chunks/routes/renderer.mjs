@@ -1,10 +1,10 @@
 import process from 'node:process';globalThis._importMeta_=globalThis._importMeta_||{url:"file:///_entry.js",env:process.env};import { getRequestDependencies, getPreloadLinks, getPrefetchLinks, createRenderer } from 'vue-bundle-renderer/runtime';
-import { u as useRuntimeConfig, e as eventHandler, s as setResponseHeader, a as send, g as getResponseStatus, b as setResponseStatus, c as setResponseHeaders, d as useNitroApp, j as joinRelativeURL, f as getQuery, h as createError, i as getRouteRules, k as getResponseStatusText } from '../runtime.mjs';
+import { u as useRuntimeConfig, e as eventHandler, s as setResponseHeader, a as send, g as getResponseStatus, b as setResponseStatus, c as useNitroApp, d as setResponseHeaders, j as joinRelativeURL, f as getQuery, h as createError, i as getRouteRules, k as getResponseStatusText } from '../runtime.mjs';
 import { stringify, uneval } from 'devalue';
 import { renderToString } from 'vue/server-renderer';
 import { propsToString, renderSSRHead } from '@unhead/ssr';
 import { createServerHead as createServerHead$1, CapoPlugin } from 'unhead';
-import { version, unref } from 'vue';
+import { unref, version } from 'vue';
 import { defineHeadPlugin } from '@unhead/shared';
 
 function defineRenderHandler(handler) {
@@ -209,7 +209,7 @@ const renderer = defineRenderHandler(async (event) => {
   const isRenderingIsland = componentIslands;
   const islandContext = void 0;
   let url = ssrError?.url || islandContext?.url || event.path;
-  const isRenderingPayload = PAYLOAD_URL_RE.test(url) && !isRenderingIsland;
+  const isRenderingPayload = PAYLOAD_URL_RE.test(url) && true;
   if (isRenderingPayload) {
     url = url.substring(0, url.lastIndexOf("/")) || "/";
     event._path = url;
@@ -227,7 +227,7 @@ const renderer = defineRenderHandler(async (event) => {
     url,
     event,
     runtimeConfig: useRuntimeConfig(event),
-    noSSR: event.context.nuxt?.noSSR || routeOptions.ssr === false && !isRenderingIsland || (false),
+    noSSR: event.context.nuxt?.noSSR || routeOptions.ssr === false && true || (false),
     head,
     error: !!ssrError,
     nuxt: void 0,
@@ -280,7 +280,7 @@ const renderer = defineRenderHandler(async (event) => {
       head.push({ link }, headEntryOptions);
     }
   }
-  if (!NO_SCRIPTS && !isRenderingIsland) {
+  if (!NO_SCRIPTS && true) {
     head.push({
       link: getPreloadLinks(ssrContext, renderer.rendererContext)
     }, headEntryOptions);
@@ -296,7 +296,7 @@ const renderer = defineRenderHandler(async (event) => {
       tagPriority: "high"
     });
   }
-  if (!routeOptions.experimentalNoScripts && !isRenderingIsland) {
+  if (!routeOptions.experimentalNoScripts && true) {
     head.push({
       script: Object.values(scripts).map((resource) => ({
         type: resource.module ? "module" : null,
