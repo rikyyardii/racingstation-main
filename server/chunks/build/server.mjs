@@ -710,7 +710,7 @@ const _routes = [
   {
     name: "rikya-components-add_livestream",
     path: "/rikya/components/add_livestream",
-    component: () => import('./add_livestream-DuhtOwuU.mjs')
+    component: () => import('./add_livestream-B-ca-0-l.mjs')
   },
   {
     name: "rikya-components-Ads",
@@ -745,7 +745,7 @@ const _routes = [
   {
     name: "rikya-edit_stream-id",
     path: "/rikya/edit_stream/:id()",
-    component: () => import('./_id_-D44NTcFU.mjs')
+    component: () => import('./_id_-BOuSkgFa.mjs')
   },
   {
     name: "rikya",

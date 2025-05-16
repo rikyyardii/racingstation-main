@@ -64,12 +64,14 @@ app.use(
   })
 );
 
+dotenv.config({ path: path.join(__dirname, "../.env") });
+
 // Koneksi database MySQL
 const db = await mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "racingstations",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 
 db.connect((err) => {
@@ -284,7 +286,7 @@ const generateUniqueStreamSlug = async (title) => {
 
 // Endpoint menyimpan stream
 app.post("/api/streams", async (req, res) => {
-  const { title, category, event, excerpt, link, link2, link3, link4, content, session_name, scheduled_enable_time, scheduled_disable_time, imagePath } = req.body;
+  const { title, category, event, excerpt, link, link2, link3, link4, content, session_name, event_type, scheduled_enable_time, scheduled_disable_time, imagePath } = req.body;
 
   // Simpan waktu sesuai input user tanpa konversi UTC
   const scheduledTime = scheduled_enable_time ? DateTime.fromISO(scheduled_enable_time, { zone: "Asia/Jakarta" }).toFormat("yyyy-MM-dd HH:mm:ss") : null;
@@ -318,8 +320,8 @@ app.post("/api/streams", async (req, res) => {
     const query = `
       INSERT INTO streams (
         slug, title, category, event, excerpt, link, link2, link3, link4, 
-        content, session_name, image_path, created_at, status, scheduled_enable_time, scheduled_disable_time
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        content, session_name, event_type, image_path, created_at, status, scheduled_enable_time, scheduled_disable_time
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const values = [
       slug,
@@ -333,6 +335,7 @@ app.post("/api/streams", async (req, res) => {
       link4,
       content,
       session_name,
+      event_type,
       imagePath,
       formattedCreatedAt,
       "disable",
@@ -465,7 +468,23 @@ app.get("/api/streams/:slug", async (req, res) => {
 // Edit Stream
 app.put("/api/streams/:slug", async (req, res) => {
   const { slug } = req.params;
-  const { title, category, event, excerpt, link, link2, link3, link4, content, status, session_name, event_type, scheduled_enable_time, scheduled_disable_time } = req.body;
+  const {
+    title,
+    category,
+    event,
+    excerpt,
+    link,
+    link2,
+    link3,
+    link4,
+    content,
+    status,
+    session_name,
+    event_type,
+    scheduled_enable_time,
+    scheduled_disable_time,
+    session_schedules, // Terima data jadwal sesi dari frontend
+  } = req.body;
 
   // Handle conversion untuk scheduled_enable_time
   let scheduledTime = null;
@@ -477,15 +496,11 @@ app.put("/api/streams/:slug", async (req, res) => {
       });
 
       if (!dt.isValid) {
-        return res.status(400).json({
-          error: "Format waktu enable tidak valid",
-        });
+        return res.status(400).json({ error: "Format waktu enable tidak valid" });
       }
       scheduledTime = dt.toFormat("yyyy-MM-dd HH:mm:ss");
     } catch (error) {
-      return res.status(400).json({
-        error: "Format datetime enable tidak valid",
-      });
+      return res.status(400).json({ error: "Format datetime enable tidak valid" });
     }
   } else if (scheduled_enable_time === "") {
     scheduledTime = null;
@@ -501,15 +516,11 @@ app.put("/api/streams/:slug", async (req, res) => {
       });
 
       if (!dt.isValid) {
-        return res.status(400).json({
-          error: "Format waktu disable tidak valid",
-        });
+        return res.status(400).json({ error: "Format waktu disable tidak valid" });
       }
       disableTime = dt.toFormat("yyyy-MM-dd HH:mm:ss");
     } catch (error) {
-      return res.status(400).json({
-        error: "Format datetime disable tidak valid",
-      });
+      return res.status(400).json({ error: "Format datetime disable tidak valid" });
     }
   } else if (scheduled_disable_time === "") {
     disableTime = null;
@@ -532,7 +543,6 @@ app.put("/api/streams/:slug", async (req, res) => {
     // Fungsi helper untuk membangun query
     const addUpdate = (field, value) => {
       if (value !== undefined) {
-        // Menerima null dan nilai valid
         updates.push(`${field} = ?`);
         values.push(value);
       }
@@ -552,7 +562,9 @@ app.put("/api/streams/:slug", async (req, res) => {
     addUpdate("session_name", session_name);
     addUpdate("event_type", event_type);
     addUpdate("scheduled_enable_time", scheduledTime);
-    addUpdate("scheduled_disable_time", disableTime); // Ditambahkan di sini
+    addUpdate("scheduled_disable_time", disableTime);
+    // Tambahkan session_schedules ke query update jika ada
+    addUpdate("session_schedules", JSON.stringify(session_schedules));
 
     if (updates.length === 0) {
       return res.status(400).json({ error: "Tidak ada data valid untuk diupdate" });
@@ -568,7 +580,7 @@ app.put("/api/streams/:slug", async (req, res) => {
     res.json({
       success: true,
       message: "Stream berhasil diperbarui",
-      updated_fields: updates.map((update) => update.split(" = ")[0]),
+      updated_fields: updates.map((u) => u.split(" = ")[0]),
     });
   } catch (error) {
     console.error("Error updating stream:", error);
@@ -845,8 +857,6 @@ app.get("/api/memory-usage", (req, res) => {
   });
 });
 
-dotenv.config({ path: path.join(__dirname, "../.env") });
-
 // Configure Twitter client
 const twitterClient = new TwitterApi({
   appKey: process.env.API_KEY,
@@ -924,9 +934,153 @@ async function checkAndDisableStreams() {
   }
 }
 
+async function autoTransferNextSession() {
+  try {
+    const now = DateTime.now().setZone("Asia/Jakarta").toFormat("yyyy-MM-dd HH:mm:ss");
+
+    // First, find streams where current session has ended (disable_time passed)
+    // but hasn't been updated to the next session yet
+    const [expiredStreams] = await db.execute(
+      `SELECT id, slug, event, title, session_name, event_type, session_schedules 
+       FROM streams 
+       WHERE scheduled_disable_time IS NOT NULL 
+         AND scheduled_disable_time <= ?`,
+      [now]
+    );
+
+    console.log(`Found ${expiredStreams.length} streams with expired sessions`);
+
+    // Process each expired stream
+    for (const stream of expiredStreams) {
+      try {
+        // Parse session schedules if available
+        let sessionSchedules = {};
+        if (stream.session_schedules) {
+          try {
+            sessionSchedules = typeof stream.session_schedules === "string" ? JSON.parse(stream.session_schedules) : stream.session_schedules;
+          } catch (error) {
+            console.error(`Error parsing session schedules for stream ${stream.id}:`, error);
+            continue; // Skip to next stream if parsing fails
+          }
+        } else {
+          console.log(`No session schedules found for stream ${stream.id}`);
+          continue; // Skip if no schedules available
+        }
+
+        // Determine session type based on event_type
+        let sessionType = "other";
+        if (stream.event_type === "(The link will remain the same for all sessions in this race week including FP1, FP2, FP3, Qualifying, and Race)") {
+          sessionType = "f1";
+        } else if (stream.event_type === "(The link will remain the same for all sessions in this race week including FP1, Sprint Qualifying, Sprint Race, Qualifying, and Race)") {
+          sessionType = "f1Sprint";
+        } else if (stream.event_type === "(The link will remain the same for all sessions in this race week including FP1, Practice, FP2, Qualifying, Sprint, Warm Up and Race)") {
+          sessionType = "motogp";
+        }
+
+        // Define ordered session options based on session type
+        const orderedSessions = {
+          f1: ["Free Practice 1 F1", "Free Practice 2 F1", "Free Practice 3 F1", "Qualifying F1", "Race F1"],
+          f1Sprint: ["Free Practice 1 F1", "Sprint Qualifying F1", "Sprint Race F1", "Qualifying F1", "Race F1"],
+          motogp: ["Free Practice 1 MotoGP", "Practice MotoGP", "Free Practice 2 MotoGP", "Qualifying MotoGP", "Sprint Race MotoGP", "Warm Up", "Race MotoGP"],
+          other: ["Race FIA WEC", "Match"],
+        };
+
+        // Get the current session name and find its index in the ordered sessions
+        const currentSessionName = stream.session_name;
+        const currentSessionIndex = orderedSessions[sessionType].indexOf(currentSessionName);
+
+        if (currentSessionIndex === -1) {
+          console.log(`Current session "${currentSessionName}" not found in the ordered list for stream ${stream.id}`);
+          continue;
+        }
+
+        // Find the next session in the sequence
+        const nextSessionIndex = currentSessionIndex + 1;
+        if (nextSessionIndex >= orderedSessions[sessionType].length) {
+          console.log(`No next session available for stream ${stream.id}, current session was the last one`);
+          continue;
+        }
+
+        const nextSessionName = orderedSessions[sessionType][nextSessionIndex];
+        console.log(`Found next session "${nextSessionName}" for stream ${stream.id}`);
+
+        // Check if we have schedule data for the next session
+        if (!sessionSchedules[sessionType] || !sessionSchedules[sessionType][nextSessionName]) {
+          console.log(`No schedule data found for next session "${nextSessionName}" for stream ${stream.id}`);
+          continue;
+        }
+
+        const nextSessionData = sessionSchedules[sessionType][nextSessionName];
+
+        // Process times for database storage - keep consistent with other functions
+        // by working with Jakarta time format
+        let startTime = null;
+        let endTime = null;
+
+        if (nextSessionData.startTime) {
+          try {
+            startTime = DateTime.fromISO(nextSessionData.startTime, { zone: "Asia/Jakarta" }).toFormat("yyyy-MM-dd HH:mm:ss");
+          } catch (error) {
+            console.error(`Error processing start time for stream ${stream.id}:`, error);
+          }
+        }
+
+        if (nextSessionData.endTime) {
+          try {
+            endTime = DateTime.fromISO(nextSessionData.endTime, { zone: "Asia/Jakarta" }).toFormat("yyyy-MM-dd HH:mm:ss");
+          } catch (error) {
+            console.error(`Error processing end time for stream ${stream.id}:`, error);
+          }
+        }
+
+        // Only update if we have both start and end times
+        if (!startTime || !endTime) {
+          console.log(`Missing start or end time for next session of stream ${stream.id}`);
+          continue;
+        }
+
+        // Update the stream with the next session data
+        await db.execute(
+          `UPDATE streams SET 
+            session_name = ?,
+            scheduled_enable_time = ?,
+            scheduled_disable_time = ?
+          WHERE id = ?`,
+          [nextSessionName, startTime, endTime, stream.id]
+        );
+
+        console.log(`Successfully updated stream ${stream.id} to next session "${nextSessionName}"`);
+
+        // Also check if new enable time is in the past but before now,
+        // if so, update status to 'enable' immediately
+        if (startTime <= now && endTime > now) {
+          await db.execute(`UPDATE streams SET status = 'enable' WHERE id = ?`, [stream.id]);
+          console.log(`Enabled stream ${stream.id} since its new session is currently active`);
+
+          // Optionally send a tweet about this newly enabled session
+          try {
+            const tweetText = `Live streaming ${nextSessionName} ${stream.event} is ON! ${stream.event_type} https://racingstation.top/watch/${stream.slug}`;
+            await twitterClient.v2.tweet(tweetText);
+            console.log(`Tweeted about newly enabled stream: ${stream.title} - ${nextSessionName}`);
+          } catch (tweetError) {
+            console.error("Error sending tweet:", tweetError);
+          }
+        }
+      } catch (streamError) {
+        console.error(`Error processing stream ${stream.id}:`, streamError);
+      }
+    }
+  } catch (error) {
+    console.error("Auto transfer session scheduler error:", error);
+  }
+}
+
 // Jalankan scheduler SETELAH didefinisikan
 scheduleJob("* * * * *", checkAndEnableStreams);
 scheduleJob("* * * * *", checkAndDisableStreams);
+setInterval(autoTransferNextSession, 30000);
+
+console.log("All schedulers set up and running");
 
 // Start server
 const PORT = 5000;
