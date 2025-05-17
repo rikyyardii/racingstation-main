@@ -665,87 +665,87 @@ const _routes = [
   {
     name: "about-contact-page",
     path: "/about/contact-page",
-    component: () => import('./contact-page-B9ADf4EN.mjs')
+    component: () => import('./contact-page-DiWRKmP2.mjs')
   },
   {
     name: "about-disclaimer",
     path: "/about/disclaimer",
-    component: () => import('./disclaimer-BUxlfkYX.mjs')
+    component: () => import('./disclaimer-B1pf_UMj.mjs')
   },
   {
     name: "about-privacy-policy",
     path: "/about/privacy-policy",
-    component: () => import('./privacy-policy-CxnVyDhE.mjs')
+    component: () => import('./privacy-policy-DSWO81-0.mjs')
   },
   {
     name: "about-racingstation",
     path: "/about/racingstation",
-    component: () => import('./racingstation-AO23haKP.mjs')
+    component: () => import('./racingstation-CW9r5QAb.mjs')
   },
   {
     name: "about-tos",
     path: "/about/tos",
-    component: () => import('./tos-B9NJ412R.mjs')
+    component: () => import('./tos-l184pmxe.mjs')
   },
   {
     name: "article-id",
     path: "/article/:id()",
-    component: () => import('./_id_-BcPLwbhk.mjs')
+    component: () => import('./_id_-DpdYouJ5.mjs')
   },
   {
     name: "index",
     path: "/",
-    component: () => import('./index-k2-WUm5H.mjs')
+    component: () => import('./index-BDTv4ZJV.mjs')
   },
   {
     name: "rikya-components-add_adslink",
     path: "/rikya/components/add_adslink",
-    component: () => import('./add_adslink-BD3L0JJf.mjs')
+    component: () => import('./add_adslink-Cc3-Fge3.mjs')
   },
   {
     name: "rikya-components-add_artikel",
     path: "/rikya/components/add_artikel",
-    component: () => import('./add_artikel-DjdhLEko.mjs')
+    component: () => import('./add_artikel-BDUPjyHI.mjs')
   },
   {
     name: "rikya-components-add_livestream",
     path: "/rikya/components/add_livestream",
-    component: () => import('./add_livestream-B-ca-0-l.mjs')
+    component: () => import('./add_livestream-IInFjL1s.mjs')
   },
   {
     name: "rikya-components-Ads",
     path: "/rikya/components/Ads",
-    component: () => import('./Ads-CFbQ54tQ.mjs')
+    component: () => import('./Ads-BtTtsi1S.mjs')
   },
   {
     name: "rikya-components-Artikel",
     path: "/rikya/components/Artikel",
-    component: () => import('./Artikel-57uXDC4L.mjs')
+    component: () => import('./Artikel-BgEOI2oR.mjs')
   },
   {
     name: "rikya-components-Home",
     path: "/rikya/components/Home",
-    component: () => import('./Home-BmCorQn1.mjs')
+    component: () => import('./Home-DRfDvEl7.mjs')
   },
   {
     name: "rikya-components-LiveStream",
     path: "/rikya/components/LiveStream",
-    component: () => import('./LiveStream-DwdQaS8F.mjs')
+    component: () => import('./LiveStream-3zEsrVx4.mjs')
   },
   {
     name: "rikya-edit_adslink-id",
     path: "/rikya/edit_adslink/:id()",
-    component: () => import('./_id_-5EQyad0c.mjs')
+    component: () => import('./_id_-mcpgfc5R.mjs')
   },
   {
     name: "rikya-edit_artikel-id",
     path: "/rikya/edit_artikel/:id()",
-    component: () => import('./_id_-DX9tviT8.mjs')
+    component: () => import('./_id_-CfwNq6or.mjs')
   },
   {
     name: "rikya-edit_stream-id",
     path: "/rikya/edit_stream/:id()",
-    component: () => import('./_id_-BOuSkgFa.mjs')
+    component: () => import('./_id_-DU2mApKO.mjs')
   },
   {
     name: "rikya",
@@ -755,17 +755,17 @@ const _routes = [
   {
     name: "stream",
     path: "/stream",
-    component: () => import('./stream-CKLFhJ0R.mjs')
+    component: () => import('./stream-By2UfNpC.mjs')
   },
   {
     name: "watch-id",
     path: "/watch/:id()",
-    component: () => import('./_id_-C5g0FiXU.mjs')
+    component: () => import('./_id_-BZqr3SUf.mjs')
   },
   {
     name: "watch-offline_screen",
     path: "/watch/offline_screen",
-    component: () => import('./offline_screen-DlF9lN9X.mjs')
+    component: () => import('./offline_screen-CwSyAdXf.mjs')
   }
 ];
 const _wrapIf = (component, props, slots) => {
