@@ -755,7 +755,7 @@ const _routes = [
   {
     name: "stream",
     path: "/stream",
-    component: () => import('./stream-By2UfNpC.mjs')
+    component: () => import('./stream-NdWhNhsA.mjs')
   },
   {
     name: "watch-id",
@@ -765,7 +765,7 @@ const _routes = [
   {
     name: "watch-offline_screen",
     path: "/watch/offline_screen",
-    component: () => import('./offline_screen-CwSyAdXf.mjs')
+    component: () => import('./offline_screen-CrfrH6Ww.mjs')
   }
 ];
 const _wrapIf = (component, props, slots) => {
