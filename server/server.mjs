@@ -172,6 +172,30 @@ app.get("/api/adslink_card", async (req, res) => {
   }
 });
 
+// route /api/streams_card (LiveStream.vue)
+app.get("/api/session_card", async (req, res) => {
+  try {
+    const query = "SELECT * FROM sessions";
+    const [streams] = await db.execute(query);
+    res.json(streams);
+  } catch (error) {
+    console.error("Error fetching streams:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// route /api/streams_card (LiveStream.vue)
+app.get("/api/category_card", async (req, res) => {
+  try {
+    const query = "SELECT * FROM event_categories	";
+    const [streams] = await db.execute(query);
+    res.json(streams);
+  } catch (error) {
+    console.error("Error fetching streams:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 // ambil stream dengan status enable (stream.vue)
 app.get("/api/streams_enabled", async (req, res) => {
   try {
@@ -286,7 +310,14 @@ const generateUniqueStreamSlug = async (title) => {
 
 // Endpoint menyimpan stream
 app.post("/api/streams", async (req, res) => {
-  const { title, category, event, excerpt, link, link2, link3, link4, content, session_name, event_type, scheduled_enable_time, scheduled_disable_time, imagePath } = req.body;
+  const { title, category, event, excerpt, link, link2, link3, link4, content, session_name, event_type, scheduled_enable_time, scheduled_disable_time, image_path } = req.body;
+
+  console.log("Received data:", req.body); // Debug log
+
+  // Validasi field yang wajib
+  if (!title || !category || !event || !excerpt || !link || !content) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
 
   // Simpan waktu sesuai input user tanpa konversi UTC
   const scheduledTime = scheduled_enable_time ? DateTime.fromISO(scheduled_enable_time, { zone: "Asia/Jakarta" }).toFormat("yyyy-MM-dd HH:mm:ss") : null;
@@ -299,10 +330,10 @@ app.post("/api/streams", async (req, res) => {
 
     // Ambil waktu lokal dengan offset zona waktu Asia/Jakarta (+7 jam)
     const now = new Date();
-    const utcTime = new Date(now.getTime() + now.getTimezoneOffset() * 60 * 1000); // Waktu UTC
-    const jakartaTime = new Date(utcTime.getTime() + 7 * 60 * 60 * 1000); // Tambahkan 7 jam untuk Asia/Jakarta
+    const utcTime = new Date(now.getTime() + now.getTimezoneOffset() * 60 * 1000);
+    const jakartaTime = new Date(utcTime.getTime() + 7 * 60 * 60 * 1000);
 
-    // Format waktu menjadi string yang valid untuk MySQL (YYYY-MM-DD HH:mm:ss)
+    // Format waktu menjadi string yang valid untuk MySQL
     const year = jakartaTime.getFullYear();
     const month = String(jakartaTime.getMonth() + 1).padStart(2, "0");
     const date = String(jakartaTime.getDate()).padStart(2, "0");
@@ -310,7 +341,6 @@ app.post("/api/streams", async (req, res) => {
     const minutes = String(jakartaTime.getMinutes()).padStart(2, "0");
     const seconds = String(jakartaTime.getSeconds()).padStart(2, "0");
 
-    // Jika jam adalah 24, ubah menjadi 00
     if (hours === 24) hours = 0;
     hours = String(hours).padStart(2, "0");
 
@@ -320,9 +350,13 @@ app.post("/api/streams", async (req, res) => {
     const query = `
       INSERT INTO streams (
         slug, title, category, event, excerpt, link, link2, link3, link4, 
-        content, session_name, event_type, image_path, created_at, status, scheduled_enable_time, scheduled_disable_time
+        content, session_name, event_type, image_path, created_at, status, 
+        scheduled_enable_time, scheduled_disable_time
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
+
+    // Gunakan string kosong untuk field opsional jika kolom tidak mengizinkan NULL
+    // Atau gunakan null jika kolom sudah diubah untuk mengizinkan NULL
     const values = [
       slug,
       title,
@@ -330,18 +364,20 @@ app.post("/api/streams", async (req, res) => {
       event,
       excerpt,
       link,
-      link2,
-      link3,
-      link4,
+      link2 || "", // String kosong jika kolom NOT NULL, atau gunakan null jika kolom sudah diubah
+      link3 || "", // String kosong jika kolom NOT NULL, atau gunakan null jika kolom sudah diubah
+      link4 || "", // String kosong jika kolom NOT NULL, atau gunakan null jika kolom sudah diubah
       content,
-      session_name,
-      event_type,
-      imagePath,
+      session_name || "", // String kosong jika kolom NOT NULL, atau gunakan null jika kolom sudah diubah
+      event_type || "", // String kosong jika kolom NOT NULL, atau gunakan null jika kolom sudah diubah
+      image_path || "", // String kosong jika kolom NOT NULL, atau gunakan null jika kolom sudah diubah
       formattedCreatedAt,
       "disable",
-      scheduledTime, // Simpan waktu sesuai input
-      disableTime,
+      scheduledTime, // Untuk datetime, bisa tetap null
+      disableTime, // Untuk datetime, bisa tetap null
     ];
+
+    console.log("SQL Values:", values); // Debug log
 
     await db.execute(query, values);
     res.status(201).send({ message: "Stream created successfully", slug });
@@ -814,6 +850,420 @@ app.delete("/api/adslink/:id", async (req, res) => {
   }
 });
 
+// ================== EVENT CATEGORIES ENDPOINTS ==================
+
+// Get all event categories
+app.get("/api/event-categories", async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT * FROM event_categories ORDER BY name");
+    res.json(rows);
+  } catch (error) {
+    console.error("Error fetching event categories:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Get single event category
+app.get("/api/event-categories/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const query = "SELECT * FROM event_categories WHERE id = ?";
+    const [rows] = await db.execute(query, [id]);
+
+    if (rows.length > 0) {
+      res.json(rows[0]);
+    } else {
+      console.log("Event category not found for ID:", id);
+      res.status(404).json({ error: "Event category not found" });
+    }
+  } catch (error) {
+    console.error("Error fetching event category:", error);
+    res.status(500).json({ error: "Failed to fetch event category" });
+  }
+});
+
+// Create event category
+app.post("/api/event-categories", async (req, res) => {
+  const { name, description, event_type_description } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ error: "Name is required" });
+  }
+
+  try {
+    const query = "INSERT INTO event_categories (name, description, event_type_description) VALUES (?, ?, ?)";
+    const [result] = await db.execute(query, [name, description, event_type_description]);
+
+    res.status(201).json({
+      message: "Event category created successfully",
+      id: result.insertId,
+    });
+  } catch (error) {
+    if (error.code === "ER_DUP_ENTRY") {
+      return res.status(400).json({ error: "Event category name already exists" });
+    }
+    console.error("Error creating event category:", error);
+    res.status(500).json({ error: "Failed to create event category" });
+  }
+});
+
+// Update event category
+app.put("/api/event-categories/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name, description, event_type_description } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ error: "Name is required" });
+  }
+
+  try {
+    const query = "UPDATE event_categories SET name = ?, description = ?, event_type_description = ? WHERE id = ?";
+    const [result] = await db.execute(query, [name, description, event_type_description, id]);
+
+    if (result.affectedRows > 0) {
+      res.json({ message: "Event category updated successfully" });
+    } else {
+      res.status(404).json({ error: "Event category not found" });
+    }
+  } catch (error) {
+    if (error.code === "ER_DUP_ENTRY") {
+      return res.status(400).json({ error: "Event category name already exists" });
+    }
+    console.error("Error updating event category:", error);
+    res.status(500).json({ error: "Failed to update event category" });
+  }
+});
+
+// Delete event category
+app.delete("/api/event-categories/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [result] = await db.execute("DELETE FROM event_categories WHERE id = ?", [id]);
+
+    if (result.affectedRows > 0) {
+      res.json({ message: "Event category deleted successfully" });
+    } else {
+      res.status(404).json({ error: "Event category not found" });
+    }
+  } catch (error) {
+    console.error("Error deleting event category:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// ================== SESSIONS ENDPOINTS ==================
+
+// IMPORTANT: Order matters! Put specific routes BEFORE generic routes
+
+// Get all sessions (list format) - UPDATED dengan JOIN untuk mendapatkan category description
+app.get("/api/sessions-list", async (req, res) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT 
+        s.id,
+        s.category_id,
+        s.session_name,
+        s.session_order,
+        s.is_active,
+        s.created_at,
+        s.updated_at,
+        ec.name as category_name,
+        ec.description as category_description,
+        ec.event_type_description
+      FROM sessions s
+      LEFT JOIN event_categories ec ON s.category_id = ec.id
+      ORDER BY s.id DESC
+    `);
+    res.json(rows);
+  } catch (error) {
+    console.error("Error fetching event sessions:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Get sessions grouped by category (for dropdown options)
+app.get("/api/sessions/grouped", async (req, res) => {
+  try {
+    const [rows] = await db.execute(`
+      SELECT 
+        ec.id as category_id,
+        ec.name as category_name,
+        ec.event_type_description,
+        JSON_ARRAYAGG(
+          JSON_OBJECT(
+            'id', s.id,
+            'session_name', s.session_name,
+            'session_order', s.session_order
+          )
+          ORDER BY s.session_order
+        ) as sessions
+      FROM event_categories ec
+      LEFT JOIN sessions s ON ec.id = s.category_id AND s.is_active = true
+      GROUP BY ec.id, ec.name, ec.event_type_description
+      ORDER BY ec.name
+    `);
+
+    res.json(rows);
+  } catch (error) {
+    console.error("Error fetching grouped sessions:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// FIXED: Changed route to avoid conflict with /:id route
+// Get sessions by category name - MOVED TO SPECIFIC PATH
+app.get("/api/sessions/by-category/:categoryName", async (req, res) => {
+  try {
+    const { categoryName } = req.params;
+    console.log(`Fetching sessions for category: ${categoryName}`);
+
+    const [sessions] = await db.execute(
+      `
+      SELECT s.id, s.session_name, s.session_order, s.is_active, s.created_at, s.updated_at, 
+             ec.name as category_name, ec.description as category_description, ec.event_type_description
+      FROM sessions s
+      JOIN event_categories ec ON s.category_id = ec.id
+      WHERE ec.name = ? AND s.is_active = true
+      ORDER BY s.session_order
+    `,
+      [categoryName]
+    );
+
+    console.log(`Found ${sessions.length} sessions for category ${categoryName}`);
+    res.json(sessions);
+  } catch (error) {
+    console.error("Error fetching sessions:", error);
+    res.status(500).json({ error: "Failed to fetch sessions" });
+  }
+});
+
+// Get sessions by category name (alternative route)
+app.get("/api/sessions/category/:categoryName", async (req, res) => {
+  try {
+    const { categoryName } = req.params;
+    console.log(`Fetching sessions for category: ${categoryName}`);
+
+    const [sessions] = await db.execute(
+      `
+      SELECT s.id, s.session_name, s.session_order, s.is_active, s.created_at, s.updated_at, 
+             ec.name as category_name, ec.description as category_description, ec.event_type_description
+      FROM sessions s
+      JOIN event_categories ec ON s.category_id = ec.id
+      WHERE ec.name = ? AND s.is_active = true
+      ORDER BY s.session_order
+    `,
+      [categoryName]
+    );
+
+    console.log(`Found ${sessions.length} sessions for category ${categoryName}`);
+    res.json(sessions);
+  } catch (error) {
+    console.error("Error fetching sessions:", error);
+    res.status(500).json({ error: "Failed to fetch sessions" });
+  }
+});
+
+// GET single session by ID - FIXED VERSION
+// IMPORTANT: This must come AFTER the specific routes above
+app.get("/api/sessions/:id", async (req, res) => {
+  const { id } = req.params;
+
+  // Pastikan ID adalah numeric
+  if (isNaN(id) || id <= 0) {
+    return res.status(400).json({ error: "Invalid session ID format" });
+  }
+
+  try {
+    console.log(`Fetching session with ID: ${id}`);
+
+    const [rows] = await db.execute(
+      `
+      SELECT 
+        s.id,
+        s.category_id,
+        s.session_name,
+        s.session_order,
+        s.is_active,
+        s.created_at,
+        s.updated_at,
+        ec.name as category_name,
+        ec.description as category_description,
+        ec.event_type_description
+      FROM sessions s
+      LEFT JOIN event_categories ec ON s.category_id = ec.id
+      WHERE s.id = ?
+    `,
+      [id]
+    );
+
+    console.log(`Query executed for session ID ${id}, found ${rows.length} rows`);
+
+    if (rows.length === 0) {
+      console.log(`Session with ID ${id} not found`);
+      return res.status(404).json({ error: "Session not found" });
+    }
+
+    const sessionData = rows[0];
+    console.log(`Returning session data:`, sessionData);
+
+    // Ensure consistent data structure
+    const response = {
+      id: sessionData.id,
+      category_id: sessionData.category_id,
+      session_name: sessionData.session_name,
+      session_order: sessionData.session_order,
+      is_active: sessionData.is_active,
+      created_at: sessionData.created_at,
+      updated_at: sessionData.updated_at,
+      category_name: sessionData.category_name,
+      category_description: sessionData.category_description,
+      event_type_description: sessionData.event_type_description,
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error("Error fetching session:", error);
+    res.status(500).json({ error: "Failed to fetch session" });
+  }
+});
+
+// Get all sessions with filtering options - UPDATED dengan JOIN untuk mendapatkan category description
+app.get("/api/sessions", async (req, res) => {
+  const { category_id, category_name } = req.query;
+
+  try {
+    let query = `
+      SELECT s.*, ec.name as category_name, ec.description as category_description, ec.event_type_description
+      FROM sessions s 
+      JOIN event_categories ec ON s.category_id = ec.id 
+      WHERE s.is_active = true
+    `;
+    let params = [];
+
+    if (category_id) {
+      query += " AND s.category_id = ?";
+      params.push(category_id);
+    } else if (category_name) {
+      query += " AND ec.name = ?";
+      params.push(category_name);
+    }
+
+    query += " ORDER BY s.category_id, s.session_order";
+
+    const [rows] = await db.execute(query, params);
+    res.json(rows);
+  } catch (error) {
+    console.error("Error fetching sessions:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Create session
+app.post("/api/sessions", async (req, res) => {
+  const { category_id, session_name, session_order, is_active } = req.body;
+
+  // Validation
+  if (!category_id || !session_name || !session_order) {
+    return res.status(400).json({ error: "Category ID, session name, and session order are required" });
+  }
+
+  // Validate data types
+  if (isNaN(category_id) || isNaN(session_order)) {
+    return res.status(400).json({ error: "Category ID and session order must be numbers" });
+  }
+
+  try {
+    const query = "INSERT INTO sessions (category_id, session_name, session_order, is_active) VALUES (?, ?, ?, ?)";
+    const [result] = await db.execute(query, [parseInt(category_id), session_name.trim(), parseInt(session_order), is_active !== undefined ? is_active : true]);
+
+    res.status(201).json({
+      message: "Session created successfully",
+      id: result.insertId,
+    });
+  } catch (error) {
+    if (error.code === "ER_DUP_ENTRY") {
+      return res.status(400).json({ error: "Session name already exists in this category" });
+    }
+    console.error("Error creating session:", error);
+    res.status(500).json({ error: "Failed to create session" });
+  }
+});
+
+// Update session - FIXED VERSION
+app.put("/api/sessions/:id", async (req, res) => {
+  const { id } = req.params;
+  const { category_id, session_name, session_order, is_active } = req.body;
+
+  // Validate ID
+  if (isNaN(id) || id <= 0) {
+    return res.status(400).json({ error: "Invalid session ID" });
+  }
+
+  // Validate required fields
+  if (!category_id || !session_name || !session_order) {
+    return res.status(400).json({ error: "Category ID, session name, and session order are required" });
+  }
+
+  // Validate data types
+  if (isNaN(category_id) || isNaN(session_order)) {
+    return res.status(400).json({ error: "Category ID and session order must be numbers" });
+  }
+
+  try {
+    console.log(`Updating session ${id} with data:`, { category_id, session_name, session_order, is_active });
+
+    // First, check if session exists
+    const [checkRows] = await db.execute("SELECT id FROM sessions WHERE id = ?", [id]);
+    if (checkRows.length === 0) {
+      return res.status(404).json({ error: "Session not found" });
+    }
+
+    const query = "UPDATE sessions SET category_id = ?, session_name = ?, session_order = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+    const [result] = await db.execute(query, [parseInt(category_id), session_name.trim(), parseInt(session_order), is_active !== undefined ? Boolean(is_active) : true, id]);
+
+    console.log(`Update result:`, result);
+
+    if (result.affectedRows > 0) {
+      res.json({
+        message: "Session updated successfully",
+        success: true,
+      });
+    } else {
+      res.status(404).json({ error: "Session not found or no changes made" });
+    }
+  } catch (error) {
+    if (error.code === "ER_DUP_ENTRY") {
+      return res.status(400).json({ error: "Session name already exists in this category" });
+    }
+    console.error("Error updating session:", error);
+    res.status(500).json({ error: "Failed to update session" });
+  }
+});
+
+// Hard delete session (permanent)
+app.delete("/api/sessions/:id", async (req, res) => {
+  const { id } = req.params;
+
+  if (isNaN(id) || id <= 0) {
+    return res.status(400).json({ error: "Invalid session ID" });
+  }
+
+  try {
+    const [result] = await db.execute("DELETE FROM sessions WHERE id = ?", [id]);
+
+    if (result.affectedRows > 0) {
+      res.json({ message: "Session permanently deleted" });
+    } else {
+      res.status(404).json({ error: "Session not found" });
+    }
+  } catch (error) {
+    console.error("Error permanently deleting session:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 // Endpoint hitung jumlah artikel
 app.get("/api/articles_count", async (req, res) => {
   try {
@@ -934,12 +1384,12 @@ async function checkAndDisableStreams() {
   }
 }
 
+// Auto transfer session function (unchanged)
 async function autoTransferNextSession() {
   try {
     const now = DateTime.now().setZone("Asia/Jakarta").toFormat("yyyy-MM-dd HH:mm:ss");
 
-    // First, find streams where current session has ended (disable_time passed)
-    // but hasn't been updated to the next session yet
+    // Find streams where current session has ended
     const [expiredStreams] = await db.execute(
       `SELECT id, slug, event, title, session_name, event_type, session_schedules 
        FROM streams 
@@ -960,60 +1410,67 @@ async function autoTransferNextSession() {
             sessionSchedules = typeof stream.session_schedules === "string" ? JSON.parse(stream.session_schedules) : stream.session_schedules;
           } catch (error) {
             console.error(`Error parsing session schedules for stream ${stream.id}:`, error);
-            continue; // Skip to next stream if parsing fails
+            continue;
           }
         } else {
           console.log(`No session schedules found for stream ${stream.id}`);
-          continue; // Skip if no schedules available
-        }
-
-        // Determine session type based on event_type
-        let sessionType = "other";
-        if (stream.event_type === "(The link will remain the same for all sessions in this race week including FP1, FP2, FP3, Qualifying, and Race)") {
-          sessionType = "f1";
-        } else if (stream.event_type === "(The link will remain the same for all sessions in this race week including FP1, Sprint Qualifying, Sprint Race, Qualifying, and Race)") {
-          sessionType = "f1Sprint";
-        } else if (stream.event_type === "(The link will remain the same for all sessions in this race week including FP1, Practice, FP2, Qualifying, Sprint, Warm Up and Race)") {
-          sessionType = "motogp";
-        }
-
-        // Define ordered session options based on session type
-        const orderedSessions = {
-          f1: ["Free Practice 1 F1", "Free Practice 2 F1", "Free Practice 3 F1", "Qualifying F1", "Race F1"],
-          f1Sprint: ["Free Practice 1 F1", "Sprint Qualifying F1", "Sprint Race F1", "Qualifying F1", "Race F1"],
-          motogp: ["Free Practice 1 MotoGP", "Practice MotoGP", "Free Practice 2 MotoGP", "Qualifying MotoGP", "Sprint Race MotoGP", "Warm Up", "Race MotoGP"],
-          other: ["Race FIA WEC", "Match"],
-        };
-
-        // Get the current session name and find its index in the ordered sessions
-        const currentSessionName = stream.session_name;
-        const currentSessionIndex = orderedSessions[sessionType].indexOf(currentSessionName);
-
-        if (currentSessionIndex === -1) {
-          console.log(`Current session "${currentSessionName}" not found in the ordered list for stream ${stream.id}`);
           continue;
         }
 
-        // Find the next session in the sequence
+        // Determine session type based on event_type
+        let categoryName = "other";
+        if (stream.event_type === "(The link will remain the same for all sessions in this race week including FP1, FP2, FP3, Qualifying, and Race)") {
+          categoryName = "f1";
+        } else if (stream.event_type === "(The link will remain the same for all sessions in this race week including FP1, Sprint Qualifying, Sprint Race, Qualifying, and Race)") {
+          categoryName = "f1Sprint";
+        } else if (stream.event_type === "(The link will remain the same for all sessions in this race week including FP1, Practice, FP2, Qualifying, Sprint, Warm Up and Race)") {
+          categoryName = "motogp";
+        }
+
+        // Get ordered sessions from database
+        const [sessions] = await db.execute(
+          `
+          SELECT s.session_name, s.session_order
+          FROM sessions s
+          JOIN event_categories ec ON s.category_id = ec.id
+          WHERE ec.name = ? AND s.is_active = true
+          ORDER BY s.session_order
+        `,
+          [categoryName]
+        );
+
+        if (sessions.length === 0) {
+          console.log(`No active sessions found for category ${categoryName} for stream ${stream.id}`);
+          continue;
+        }
+
+        // Find current session and get next one
+        const currentSessionIndex = sessions.findIndex((s) => s.session_name === stream.session_name);
+
+        if (currentSessionIndex === -1) {
+          console.log(`Current session "${stream.session_name}" not found in database for stream ${stream.id}`);
+          continue;
+        }
+
+        // Check if there's a next session
         const nextSessionIndex = currentSessionIndex + 1;
-        if (nextSessionIndex >= orderedSessions[sessionType].length) {
+        if (nextSessionIndex >= sessions.length) {
           console.log(`No next session available for stream ${stream.id}, current session was the last one`);
           continue;
         }
 
-        const nextSessionName = orderedSessions[sessionType][nextSessionIndex];
-        console.log(`Found next session "${nextSessionName}" for stream ${stream.id}`);
+        const nextSession = sessions[nextSessionIndex];
+        console.log(`Found next session "${nextSession.session_name}" for stream ${stream.id}`);
 
         // Check if we have schedule data for the next session
-        if (!sessionSchedules[sessionType] || !sessionSchedules[sessionType][nextSessionName]) {
-          console.log(`No schedule data found for next session "${nextSessionName}" for stream ${stream.id}`);
+        if (!sessionSchedules[categoryName] || !sessionSchedules[categoryName][nextSession.session_name]) {
+          console.log(`No schedule data found for next session "${nextSession.session_name}" for stream ${stream.id}`);
           continue;
         }
 
-        const nextSessionData = sessionSchedules[sessionType][nextSessionName];
+        const nextSessionData = sessionSchedules[categoryName][nextSession.session_name];
 
-        // Process times for database storage - keep consistent with other functions
-        // by working with Jakarta time format
+        // Process times for database storage
         let startTime = null;
         let endTime = null;
 
@@ -1046,22 +1503,21 @@ async function autoTransferNextSession() {
             scheduled_enable_time = ?,
             scheduled_disable_time = ?
           WHERE id = ?`,
-          [nextSessionName, startTime, endTime, stream.id]
+          [nextSession.session_name, startTime, endTime, stream.id]
         );
 
-        console.log(`Successfully updated stream ${stream.id} to next session "${nextSessionName}"`);
+        console.log(`Successfully updated stream ${stream.id} to next session "${nextSession.session_name}"`);
 
-        // Also check if new enable time is in the past but before now,
-        // if so, update status to 'enable' immediately
+        // Check if new enable time is in the past but end time is in the future
         if (startTime <= now && endTime > now) {
           await db.execute(`UPDATE streams SET status = 'enable' WHERE id = ?`, [stream.id]);
           console.log(`Enabled stream ${stream.id} since its new session is currently active`);
 
-          // Optionally send a tweet about this newly enabled session
+          // Send tweet about newly enabled session
           try {
-            const tweetText = `Live streaming ${nextSessionName} ${stream.event} is ON! ${stream.event_type} https://racingstation.top/watch/${stream.slug}`;
+            const tweetText = `Live streaming ${nextSession.session_name} ${stream.event} is ON! ${stream.event_type} https://racingstation.top/watch/${stream.slug}`;
             await twitterClient.v2.tweet(tweetText);
-            console.log(`Tweeted about newly enabled stream: ${stream.title} - ${nextSessionName}`);
+            console.log(`Tweeted about newly enabled stream: ${stream.title} - ${nextSession.session_name}`);
           } catch (tweetError) {
             console.error("Error sending tweet:", tweetError);
           }

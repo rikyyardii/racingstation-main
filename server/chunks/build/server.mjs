@@ -1,5 +1,5 @@
 import { defineComponent, ref, h, resolveComponent, hasInjectionContext, inject, unref, computed, getCurrentInstance, version, provide, shallowReactive, watch, Suspense, nextTick, Fragment, Transition, createApp, toRef, onErrorCaptured, onServerPrefetch, createVNode, resolveDynamicComponent, reactive, effectScope, shallowRef, isReadonly, isRef, isShallow, isReactive, toRaw, getCurrentScope, mergeProps, withCtx, createTextVNode, useSSRContext } from 'vue';
-import { p as parseQuery, l as hasProtocol, m as joinURL, w as withQuery, n as isScriptProtocol, o as withTrailingSlash, q as withoutTrailingSlash, r as sanitizeStatusCode, $ as $fetch, t as defu, v as createHooks, h as createError$1, x as toRouteMatcher, y as createRouter$1 } from '../runtime.mjs';
+import { p as parseQuery, h as createError$1, l as hasProtocol, m as joinURL, w as withQuery, n as isScriptProtocol, o as withTrailingSlash, q as withoutTrailingSlash, r as sanitizeStatusCode, $ as $fetch, t as defu, v as createHooks, x as toRouteMatcher, y as createRouter$1 } from '../runtime.mjs';
 import { b as baseURL } from '../routes/renderer.mjs';
 import { getActiveHead, CapoPlugin } from 'unhead';
 import { defineHeadPlugin } from '@unhead/shared';
@@ -665,37 +665,42 @@ const _routes = [
   {
     name: "about-contact-page",
     path: "/about/contact-page",
-    component: () => import('./contact-page-DiWRKmP2.mjs')
+    component: () => import('./contact-page-BiEizehR.mjs')
   },
   {
     name: "about-disclaimer",
     path: "/about/disclaimer",
-    component: () => import('./disclaimer-B1pf_UMj.mjs')
+    component: () => import('./disclaimer-BlUZd7ju.mjs')
   },
   {
     name: "about-privacy-policy",
     path: "/about/privacy-policy",
-    component: () => import('./privacy-policy-DSWO81-0.mjs')
+    component: () => import('./privacy-policy-DIcHhQQD.mjs')
   },
   {
     name: "about-racingstation",
     path: "/about/racingstation",
-    component: () => import('./racingstation-CW9r5QAb.mjs')
+    component: () => import('./racingstation-BHsBJ0Rl.mjs')
   },
   {
     name: "about-tos",
     path: "/about/tos",
-    component: () => import('./tos-l184pmxe.mjs')
+    component: () => import('./tos-BKvlcfPf.mjs')
   },
   {
     name: "article-id",
     path: "/article/:id()",
-    component: () => import('./_id_-DpdYouJ5.mjs')
+    component: () => import('./_id_-ArCXbM07.mjs')
+  },
+  {
+    name: "article-tutorial-tutorial",
+    path: "/article/tutorial/tutorial",
+    component: () => import('./tutorial-BnkoqqSv.mjs')
   },
   {
     name: "index",
     path: "/",
-    component: () => import('./index-BDTv4ZJV.mjs')
+    component: () => import('./index-CYVfmxuo.mjs')
   },
   {
     name: "rikya-components-add_adslink",
@@ -708,29 +713,49 @@ const _routes = [
     component: () => import('./add_artikel-BDUPjyHI.mjs')
   },
   {
+    name: "rikya-components-add_categories",
+    path: "/rikya/components/add_categories",
+    component: () => import('./add_categories-B-9HtLMg.mjs')
+  },
+  {
     name: "rikya-components-add_livestream",
     path: "/rikya/components/add_livestream",
-    component: () => import('./add_livestream-IInFjL1s.mjs')
+    component: () => import('./add_livestream-DRfxF8zK.mjs')
+  },
+  {
+    name: "rikya-components-add_session",
+    path: "/rikya/components/add_session",
+    component: () => import('./add_session-BbGurVO1.mjs')
   },
   {
     name: "rikya-components-Ads",
     path: "/rikya/components/Ads",
-    component: () => import('./Ads-BtTtsi1S.mjs')
+    component: () => import('./Ads-DXsCAmPC.mjs')
   },
   {
     name: "rikya-components-Artikel",
     path: "/rikya/components/Artikel",
-    component: () => import('./Artikel-BgEOI2oR.mjs')
+    component: () => import('./Artikel-TMSxAu9V.mjs')
+  },
+  {
+    name: "rikya-components-Categories",
+    path: "/rikya/components/Categories",
+    component: () => import('./Categories-DrHPu_tj.mjs')
   },
   {
     name: "rikya-components-Home",
     path: "/rikya/components/Home",
-    component: () => import('./Home-DRfDvEl7.mjs')
+    component: () => import('./Home-DdXfIHdV.mjs')
   },
   {
     name: "rikya-components-LiveStream",
     path: "/rikya/components/LiveStream",
-    component: () => import('./LiveStream-3zEsrVx4.mjs')
+    component: () => import('./LiveStream-DV4oeCe7.mjs')
+  },
+  {
+    name: "rikya-components-Session",
+    path: "/rikya/components/Session",
+    component: () => import('./Session-CuWjCJO8.mjs')
   },
   {
     name: "rikya-edit_adslink-id",
@@ -743,9 +768,19 @@ const _routes = [
     component: () => import('./_id_-CfwNq6or.mjs')
   },
   {
+    name: "rikya-edit_categories-id",
+    path: "/rikya/edit_categories/:id()",
+    component: () => import('./_id_-3Q6mGK8f.mjs')
+  },
+  {
+    name: "rikya-edit_session-id",
+    path: "/rikya/edit_session/:id()",
+    component: () => import('./_id_-CEX3TgtD.mjs')
+  },
+  {
     name: "rikya-edit_stream-id",
     path: "/rikya/edit_stream/:id()",
-    component: () => import('./_id_-DU2mApKO.mjs')
+    component: () => import('./_id_-CaU6j86Z.mjs')
   },
   {
     name: "rikya",
@@ -755,12 +790,12 @@ const _routes = [
   {
     name: "stream",
     path: "/stream",
-    component: () => import('./stream-NdWhNhsA.mjs')
+    component: () => import('./stream-BW0Hoaql.mjs')
   },
   {
     name: "watch-id",
     path: "/watch/:id()",
-    component: () => import('./_id_-BZqr3SUf.mjs')
+    component: () => import('./_id_-D53mXwwW.mjs')
   },
   {
     name: "watch-offline_screen",
@@ -1780,5 +1815,5 @@ let entry;
 }
 const entry$1 = (ssrContext) => entry(ssrContext);
 
-export { _imports_0 as _, __nuxt_component_0 as a, _export_sfc as b, useRouter as c, useRoute as d, entry$1 as default, injectHead as i, resolveUnrefHeadInput as r, useRuntimeConfig as u };
+export { _imports_0 as _, __nuxt_component_0 as a, _export_sfc as b, useRouter as c, useRoute as d, entry$1 as default, createError as e, injectHead as i, resolveUnrefHeadInput as r, useRuntimeConfig as u };
 //# sourceMappingURL=server.mjs.map
