@@ -1264,6 +1264,104 @@ app.delete("/api/sessions/:id", async (req, res) => {
   }
 });
 
+// ================== SOSMED LINK ENDPOINTS ==================
+// Get all sosmed links
+app.get("/api/sosmed-links", async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT * FROM sosmed_link ORDER BY name");
+    res.json(rows);
+  } catch (error) {
+    console.error("Error fetching sosmed links:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Get single sosmed link
+app.get("/api/sosmed-links/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const query = "SELECT * FROM sosmed_link WHERE id = ?";
+    const [rows] = await db.execute(query, [id]);
+    if (rows.length > 0) {
+      res.json(rows[0]);
+    } else {
+      console.log("Sosmed link not found for ID:", id);
+      res.status(404).json({ error: "Sosmed link not found" });
+    }
+  } catch (error) {
+    console.error("Error fetching sosmed link:", error);
+    res.status(500).json({ error: "Failed to fetch sosmed link" });
+  }
+});
+
+// Create sosmed link
+app.post("/api/sosmed-links", async (req, res) => {
+  const { name, link } = req.body;
+  if (!name) {
+    return res.status(400).json({ error: "Name is required" });
+  }
+  if (!link) {
+    return res.status(400).json({ error: "Link is required" });
+  }
+  try {
+    const query = "INSERT INTO sosmed_link (name, link) VALUES (?, ?)";
+    const [result] = await db.execute(query, [name, link]);
+    res.status(201).json({
+      message: "Sosmed link created successfully",
+      id: result.insertId,
+    });
+  } catch (error) {
+    if (error.code === "ER_DUP_ENTRY") {
+      return res.status(400).json({ error: "Sosmed link name already exists" });
+    }
+    console.error("Error creating sosmed link:", error);
+    res.status(500).json({ error: "Failed to create sosmed link" });
+  }
+});
+
+// Update sosmed link
+app.put("/api/sosmed-links/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name, link } = req.body;
+  if (!name) {
+    return res.status(400).json({ error: "Name is required" });
+  }
+  if (!link) {
+    return res.status(400).json({ error: "Link is required" });
+  }
+  try {
+    const query = "UPDATE sosmed_link SET name = ?, link = ? WHERE id = ?";
+    const [result] = await db.execute(query, [name, link, id]);
+    if (result.affectedRows > 0) {
+      res.json({ message: "Sosmed link updated successfully" });
+    } else {
+      res.status(404).json({ error: "Sosmed link not found" });
+    }
+  } catch (error) {
+    if (error.code === "ER_DUP_ENTRY") {
+      return res.status(400).json({ error: "Sosmed link name already exists" });
+    }
+    console.error("Error updating sosmed link:", error);
+    res.status(500).json({ error: "Failed to update sosmed link" });
+  }
+});
+
+// Delete sosmed link
+app.delete("/api/sosmed-links/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [result] = await db.execute("DELETE FROM sosmed_link WHERE id = ?", [id]);
+    if (result.affectedRows > 0) {
+      res.json({ message: "Sosmed link deleted successfully" });
+    } else {
+      res.status(404).json({ error: "Sosmed link not found" });
+    }
+  } catch (error) {
+    console.error("Error deleting sosmed link:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 // Endpoint hitung jumlah artikel
 app.get("/api/articles_count", async (req, res) => {
   try {

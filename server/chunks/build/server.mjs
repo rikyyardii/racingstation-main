@@ -665,42 +665,42 @@ const _routes = [
   {
     name: "about-contact-page",
     path: "/about/contact-page",
-    component: () => import('./contact-page-BiEizehR.mjs')
+    component: () => import('./contact-page-C5DxwUOB.mjs')
   },
   {
     name: "about-disclaimer",
     path: "/about/disclaimer",
-    component: () => import('./disclaimer-BlUZd7ju.mjs')
+    component: () => import('./disclaimer-BcCMx74R.mjs')
   },
   {
     name: "about-privacy-policy",
     path: "/about/privacy-policy",
-    component: () => import('./privacy-policy-DIcHhQQD.mjs')
+    component: () => import('./privacy-policy-D4m47dtA.mjs')
   },
   {
     name: "about-racingstation",
     path: "/about/racingstation",
-    component: () => import('./racingstation-BHsBJ0Rl.mjs')
+    component: () => import('./racingstation-Bk_djszR.mjs')
   },
   {
     name: "about-tos",
     path: "/about/tos",
-    component: () => import('./tos-BKvlcfPf.mjs')
+    component: () => import('./tos-CybH_qGd.mjs')
   },
   {
     name: "article-id",
     path: "/article/:id()",
-    component: () => import('./_id_-ArCXbM07.mjs')
+    component: () => import('./_id_-BJ9tc4qD.mjs')
   },
   {
     name: "article-tutorial-tutorial",
     path: "/article/tutorial/tutorial",
-    component: () => import('./tutorial-BnkoqqSv.mjs')
+    component: () => import('./tutorial-CHI4IkuW.mjs')
   },
   {
     name: "index",
     path: "/",
-    component: () => import('./index-CYVfmxuo.mjs')
+    component: () => import('./index-6dgB4x67.mjs')
   },
   {
     name: "rikya-components-add_adslink",
@@ -728,39 +728,49 @@ const _routes = [
     component: () => import('./add_session-BbGurVO1.mjs')
   },
   {
+    name: "rikya-components-add_sosmed",
+    path: "/rikya/components/add_sosmed",
+    component: () => import('./add_sosmed-DLmAh49I.mjs')
+  },
+  {
     name: "rikya-components-Ads",
     path: "/rikya/components/Ads",
-    component: () => import('./Ads-DXsCAmPC.mjs')
+    component: () => import('./Ads-CG0u7M0n.mjs')
   },
   {
     name: "rikya-components-Artikel",
     path: "/rikya/components/Artikel",
-    component: () => import('./Artikel-TMSxAu9V.mjs')
+    component: () => import('./Artikel-DT3gaaub.mjs')
   },
   {
     name: "rikya-components-Categories",
     path: "/rikya/components/Categories",
-    component: () => import('./Categories-DrHPu_tj.mjs')
+    component: () => import('./Categories-DB3U6S_l.mjs')
   },
   {
     name: "rikya-components-Home",
     path: "/rikya/components/Home",
-    component: () => import('./Home-DdXfIHdV.mjs')
+    component: () => import('./Home-yfvjo1Xr.mjs')
   },
   {
     name: "rikya-components-LiveStream",
     path: "/rikya/components/LiveStream",
-    component: () => import('./LiveStream-DV4oeCe7.mjs')
+    component: () => import('./LiveStream-WF5MHloC.mjs')
   },
   {
     name: "rikya-components-Session",
     path: "/rikya/components/Session",
-    component: () => import('./Session-CuWjCJO8.mjs')
+    component: () => import('./Session-DVkSmiio.mjs')
+  },
+  {
+    name: "rikya-components-Sosmed",
+    path: "/rikya/components/Sosmed",
+    component: () => import('./Sosmed-DHZ6Jf6P.mjs')
   },
   {
     name: "rikya-edit_adslink-id",
     path: "/rikya/edit_adslink/:id()",
-    component: () => import('./_id_-mcpgfc5R.mjs')
+    component: () => import('./_id_-B1o3waU2.mjs')
   },
   {
     name: "rikya-edit_artikel-id",
@@ -778,6 +788,11 @@ const _routes = [
     component: () => import('./_id_-CEX3TgtD.mjs')
   },
   {
+    name: "rikya-edit_sosmed-id",
+    path: "/rikya/edit_sosmed/:id()",
+    component: () => import('./_id_-D9GEjHXY.mjs')
+  },
+  {
     name: "rikya-edit_stream-id",
     path: "/rikya/edit_stream/:id()",
     component: () => import('./_id_-CaU6j86Z.mjs')
@@ -790,12 +805,12 @@ const _routes = [
   {
     name: "stream",
     path: "/stream",
-    component: () => import('./stream-BW0Hoaql.mjs')
+    component: () => import('./stream-C7ut5ys1.mjs')
   },
   {
     name: "watch-id",
     path: "/watch/:id()",
-    component: () => import('./_id_-D53mXwwW.mjs')
+    component: () => import('./_id_-ClNF_Fix.mjs')
   },
   {
     name: "watch-offline_screen",
