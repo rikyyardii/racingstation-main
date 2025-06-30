@@ -695,7 +695,7 @@ const _routes = [
   {
     name: "article-tutorial-tutorial",
     path: "/article/tutorial/tutorial",
-    component: () => import('./tutorial-9chD8Lnp.mjs')
+    component: () => import('./tutorial-BOMq_Con.mjs')
   },
   {
     name: "index",
